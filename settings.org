@@ -1,0 +1,469 @@
+* Turn off menu bar
+#+BEGIN_SRC emacs-lisp
+(menu-bar-mode -1)
+(tool-bar-mode -1)
+(tooltip-mode -1)
+(global-display-line-numbers-mode 1)
+(column-number-mode t)
+(global-auto-revert-mode t)
+(toggle-scroll-bar -1)
+(global-visual-line-mode 1)
+(setq ring-bell-function 'ignore)
+#+END_SRC
+
+
+
+* Utilities
+** Disable Mouse Click
+#+begin_src emacs-lisp
+(use-package disable-mouse
+  :ensure t
+  )
+
+(global-disable-mouse-mode)
+#+end_src
+
+
+** Clipboard
+#+begin_src emacs-lisp
+(defun pbcopy ()
+  (interactive)
+  (call-process-region (point) (mark) "pbcopy")
+  (setq deactivate-mark t))
+
+(defun pbpaste ()
+  (interactive)
+  (call-process-region (point) (if mark-active (mark) (point)) "pbpaste" t t))
+
+(defun pbcut ()
+  (interactive)
+  (pbcopy)
+  (delete-region (region-beginning) (region-end)))
+
+(global-set-key (kbd "C-c c") 'pbcopy)
+(global-set-key (kbd "C-c v") 'pbpaste)
+(global-set-key (kbd "C-c x") 'pbcut)
+#+end_src
+
+** Option key as Meta key
+#+begin_src emacs-lisp
+(setq mac-option-modifier 'meta)
+#+end_src
+
+** Random key bindings
+#+begin_src emacs-lisp
+(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+(global-set-key (kbd "C-x k") 'kill-this-buffer)
+#+end_src
+
+** Backup
+#+begin_src emacs-lisp
+; Backup
+(setq create-lockfiles nil)
+(setq backup-directory-alist `(("." . "~/.saves")))
+(setq auto-save-file-name-transforms `((".*" ,"~/.saves" t)))
+#+end_src
+
+
+* Folder management
+#+begin_src  emacs-lisp
+(use-package projectile
+  :ensure t
+  :config
+     ;; enable
+     (projectile-mode +1)
+
+     ;; ignore  node_modules dir - JS
+     (setq projectile-globally-ignored-files '( "TAGS" "*/*node_modules"))
+
+     ;; remap key
+     (define-key projectile-mode-map (kbd "C-q p") 'projectile-command-map)
+  )
+
+(defun projectile-discover-projects-in-directory (directory)
+  "Discover any projects in DIRECTORY and add them to the projectile cache.
+This function is not recursive and only adds projects with roots
+at the top level of DIRECTORY."
+  (interactive
+   (list (read-directory-name "Starting directory: ")))
+  (let ((subdirs (directory-files directory t)))
+    (mapcar
+     (lambda (dir)
+       (when (and (file-directory-p dir)
+                  (not (member (file-name-nondirectory dir) '(".." "."))))
+         (let ((default-directory dir)
+               (projectile-cached-project-root dir))
+           (when (projectile-project-p)
+             (projectile-add-known-project (projectile-project-root))))))
+     subdirs)))
+#+end_src
+
+
+* Evil mode
+#+BEGIN_SRC emacs-lisp
+(setq evil-want-C-i-jump nil)
+
+(use-package evil
+  :ensure t
+  :config
+  ;; Make tab work with org-mode
+  (evil-mode 1)
+  )
+#+END_SRC
+
+
+* UI 
+** Theme
+#+BEGIN_SRC emacs-lisp
+(set-frame-font "Monaco 17" nil t)
+(use-package moe-theme
+  :ensure t
+  )
+
+(setq moe-theme-highlight-buffer-id t)
+(moe-dark)
+(moe-theme-apply-color 'red)
+
+
+
+
+;; highlight parens
+(show-paren-mode t)
+(setq show-paren-style 'expression)
+#+END_SRC
+
+
+** Mode line
+#+begin_src  emacs-lisp
+(use-package doom-modeline
+  :ensure t
+  :init (doom-modeline-mode 1)
+  )
+
+
+(setq evil-normal-state-tag   (propertize "[Normal]" 'face '(:background "red" :foreground "red"))
+      evil-emacs-state-tag    (propertize "[Emacs]" 'face '((:background "orange" :foreground "red")))
+      evil-insert-state-tag   (propertize "[Insert]" 'face '((:background "red") :foreground "white"))
+      evil-motion-state-tag   (propertize "[Motion]" 'face '((:background "blue") :foreground "white"))
+      evil-visual-state-tag   (propertize "[Visual]" 'face '((:background "grey80" :foreground "red")))
+      evil-operator-state-tag (propertize "[Operator]" 'face '((:background "purple"))))
+#+end_src
+
+
+*** Manual step
+#+begin_src bash
+Run M-x all-the-icons-install-fonts to do so. Please refer to the installation guide.
+#+end_src
+
+** Rainbow Delimiters
+#+begin_src emacs-lisp
+(use-package rainbow-delimiters
+  :ensure t
+  :hook (prog-mode . rainbow-delimiters-mode)
+  )
+#+end_src
+
+
+** Smart Parans
+#+begin_src 
+(use-package smartparens-config
+  :ensure smartparens
+  :diminish smartparens-mode
+  :config
+  (progn
+    (require 'smartparens-config)
+    (smartparens-global-mode 1)
+    (show-paren-mode t)))
+
+#+end_src
+
+
+* Org
+** Change bullet style
+#+BEGIN_SRC emacs-lisp
+(use-package org-bullets
+  :ensure t
+  :hook (org-mode . org-bullets-mode)
+  :custom
+  (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+
+#+END_SRC
+
+
+** Column to middle of page
+#+BEGIN_SRC emacs-lisp
+(defun org-mode-visual-fill ()
+  (setq visual-fill-column-width 100
+        visual-fill-column-center-text t)
+  (visual-fill-column-mode 1))
+
+(use-package visual-fill-column
+  :ensure t
+  :hook (org-mode . org-mode-visual-fill))
+#+END_SRC
+
+
+** Utilities
+#+BEGIN_SRC emacs-lisp
+;; insert src org
+(global-set-key (kbd "C-c s") 'org-insert-structure-template)
+(evil-define-key 'normal org-mode-map (kbd "<tab>") #'org-cycle)
+(set-face-foreground 'org-block-begin-line "#4e4e4e")
+(set-face-background 'org-block-begin-line "#3a3a3a")
+
+;; extend block code
+(custom-set-faces
+ '(org-block ((t (:extend t)))))
+
+;; set block code indentation
+(setq org-src-preserve-indentation nil
+      org-edit-src-content-indentation 0
+      org-startup-truncated nil
+      org-src-tab-acts-natively t
+      org-startup-indented t)
+#+END_SRC
+
+
+* Search Completion
+** Ivy mode
+#+begin_src emacs-lisp
+(use-package ivy
+  :ensure t
+  :diminish
+  :bind (("C-s" . swiper)
+         :map ivy-minibuffer-map
+         ("TAB" . ivy-alt-done)
+         ("C-l" . ivy-alt-done)
+         ("C-j" . ivy-next-line)
+         ("C-k" . ivy-previous-line)
+         :map ivy-switch-buffer-map
+         ("C-k" . ivy-previous-line)
+         ("C-l" . ivy-done)
+         ("C-d" . ivy-switch-buffer-kill)
+         :map ivy-reverse-i-search-map
+         ("C-k" . ivy-previous-line)
+         ("C-d" . ivy-reverse-i-search-kill))
+  :config
+  (ivy-mode 1))
+#+end_src
+
+** Counsel
+#+begin_src emacs-lisp
+(use-package counsel
+  :ensure t
+  :bind (("M-x" . counsel-M-x)
+         ("C-x b" . counsel-ibuffer)
+         ("C-x C-f" . counsel-find-file)
+         ("C-M-l" . counsel-imenu)
+         :map minibuffer-local-map
+         ("C-r" . 'counsel-minibuffer-history))
+  :custom
+  (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only)
+  :config
+  (setq ivy-initial-inputs-alist nil)) ;; Don't start searches with ^
+
+;; Adds M-x recent command sorting for counsel-M-x
+(use-package smex
+  :ensure t
+  :defer 1
+  :after counsel)
+#+end_src
+
+
+* Auto Completion
+#+begin_comment
+M-x company-diag: show company backend
+#+end_comment
+
+#+begin_src emacs-lisp
+(use-package company
+  :ensure t
+  ;; :hook 'emacs-startup #'global-company-mode
+  :custom
+  (company-begin-commands '(self-insert-command)) ; start autocompletion only after typing
+  (company-idle-delay .1)                         ; decrease delay before autocompletion popup shows
+  (company-minimum-prefix-length 1)
+  (company-show-numbers t)
+  (company-tooltip-align-annotations 't)
+  (company-echo-delay 0)                          ; remove annoying blinking
+  (global-company-mode t)
+  )
+#+end_src
+
+
+* Git
+** Magit
+#+begin_src emacs-lisp
+
+(use-package magit
+  :ensure t
+  :custom
+         ;; open magit status in same buffer
+         (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
+  :config
+         (global-set-key (kbd "C-x g") 'magit-status)
+  )
+
+
+;; open file in git
+(use-package git-link
+  :ensure t
+  :config
+         (setq git-link-open-in-browser t)
+  )
+(global-set-key (kbd "C-c l") 'git-link)
+
+#+end_src
+
+
+* Programming
+** Python
+- http://tkf.github.io/emacs-jedi/latest/
+
+#+begin_src emacs-lisp
+;; (use-package jedi
+;;    :ensure t
+;;    :after company
+;; )
+;; (add-hook 'python-mode-hook 'jedi:setup)
+;; (setq jedi:complete-on-dot t)                 
+
+
+(use-package anaconda-mode
+  :ensure t
+)
+(setq company-dabbrev-downcase 0)
+(setq company-idle-delay 0)
+(add-hook 'python-mode-hook 'anaconda-mode)
+
+(use-package company-anaconda
+  :ensure t
+  :after company
+)
+(add-hook 'python-mode-hook
+	  (lambda()
+	    (setq company-backends '(company-anaconda)))
+	  )
+
+;; (eval-after-load "company"
+;;   '(add-to-list 'company-backends 'company-anaconda))
+#+end_src
+
+- Manual Step
+  #+begin_src bash
+# M-x jedi:install-server in Emacs
+  #+end_src
+
+** Terraform
+#+begin_src emacs-lisp
+(use-package terraform-mode
+  :ensure t
+  )
+
+(use-package company-terraform
+  :ensure t
+  )
+
+(company-terraform-init)
+
+(add-hook 'python-mode-hook
+	  (lambda()
+	    (setq company-backends '(company-terraform)))
+	  )
+#+end_src
+
+
+** Javascript
+#+begin_src emacs-lisp
+;; (use-package js2-mode
+;;   :ensure t
+;;   :mode "\\.js\\'"
+;;   )
+;; 
+;; (use-package tern
+;;   :ensure t
+;;   )
+;; 
+;; (use-package company-tern
+;;   :ensure t
+;;   )
+;; 
+;; (add-hook 'js2-mode-hook (lambda ()
+;;                            (tern-mode)
+;;                            (company-mode)))
+;; (use-package prettier-js
+;;   :ensure t
+;;   :hook ((js2-mode . prettier-js-mode))
+;;   :config
+;;   (setq prettier-js-show-errors nil))
+;;   (setq js2-mode-show-strict-warnings nil)
+#+End_src
+
+** Yaml
+#+begin_src emacs-lisp
+(use-package yaml-mode
+  :ensure t
+  :mode "\\.ya?ml\\'")
+#+end_src
+
+** Dockerfile
+#+begin_src emacs-lisp
+(use-package dockerfile-mode
+  :ensure t
+  :config
+  :mode "Dockerfile\\'"
+  )
+#+end_src
+
+** Golang
+- source: https://github.com/mdempsky/gocode
+
+#+begin_src bash
+go get -u github.com/mdempsky/gocode
+gocode close
+#+end_src
+
+#+begin_export 
+export GOPATH=$(go env GOPATH)
+# /Users/alirom/go
+
+export PATH=$(go env GOPATH)/bin:$PATH
+# /Users/alirom/go/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin/git:/Users/alirom/go/bin:/usr/local/go/bin:/Library/Apple/usr/bin 
+#+end_export
+
+#+begin_src emacs-lisp
+(use-package go-mode
+  :ensure t
+  :defer t
+  )
+
+(use-package company-go
+  :ensure t
+  :defer t
+  )
+
+
+;; (add-hook 'go-mode-hook 'company-mode)
+(add-hook 'go-mode-hook (lambda ()
+                          (set (make-local-variable 'company-backends) '(company-go))
+			      (setq tab-width 4)
+			      (setq indent-tabs-mode 1)
+                          (company-mode)))
+#+end_src
+
+
+** Dumb Jump
+#+begin_src emacs-lisp
+(use-package dumb-jump
+  :ensure t
+  :bind (("M-g o" . dumb-jump-go-other-window)
+         ("M-g j" . dumb-jump-go)
+         ("M-g b" . dumb-jump-back)
+         ("M-g i" . dumb-jump-go-prompt)
+         ("M-g x" . dumb-jump-go-prefer-external)
+         ("M-g z" . dumb-jump-go-prefer-external-other-window))
+  :config
+         (setq dumb-jump-selector 'helm)
+  )
+#+end_src
+
