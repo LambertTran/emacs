@@ -238,7 +238,8 @@ Run M-x all-the-icons-install-fonts to do so. Please refer to the installation g
 (use-package ivy
   :ensure t
   :diminish
-  :bind (("C-s" . swiper)
+  :bind (("C-s" . swiper-isearch)
+	     ("C-a" . swiper-all-thing-at-point)
          :map ivy-minibuffer-map
          ("TAB" . ivy-alt-done)
          ("C-l" . ivy-alt-done)

@@ -53,8 +53,8 @@
  ;; If there is more than one, they won't work right.
  '(ivy-confirm-face ((t (:background "blue" :foreground "#008700" :weight bold))))
  '(ivy-current-match ((t (:inherit highlight :extend t :background "black" :foreground "green" :weight bold))))
- '(ivy-highlight-face ((t (:background "#383b31"))))
- '(ivy-minibuffer-match-face-2 ((t (:background "black" :foreground "#eeeeee" :weight bold))))
+ '(ivy-highlight-face ((t (:background "dark red"))))
+ '(ivy-minibuffer-match-face-2 ((t (:background "dark red" :foreground "#eeeeee" :weight bold))))
  '(ivy-minibuffer-match-highlight ((t (:inherit highlight :foreground "green"))))
  '(ivy-prompt-match ((t (:inherit ivy-current-match :background "white"))))
  '(mode-line ((t (:background "dark slate gray" :foreground "green" :box nil :height 1.1))))
