@@ -8,6 +8,8 @@
 (global-auto-revert-mode t)
 (toggle-scroll-bar -1)
 (global-visual-line-mode 1)
+(electric-pair-mode 1)
+(setq electric-pair-preserve-balance nil)
 (setq ring-bell-function 'ignore)
 #+END_SRC
 
