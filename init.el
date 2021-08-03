@@ -51,8 +51,12 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
-
- '(mode-line ((t (:background "dark slate gray" :foreground "green" :box nil :height 1.10))))
- '(mode-line-inactive ((t (:height 1.00))))
-
+ '(ivy-confirm-face ((t (:background "blue" :foreground "#008700" :weight bold))))
+ '(ivy-current-match ((t (:inherit highlight :extend t :background "black" :foreground "green" :weight bold))))
+ '(ivy-highlight-face ((t (:background "#383b31"))))
+ '(ivy-minibuffer-match-face-2 ((t (:background "black" :foreground "#eeeeee" :weight bold))))
+ '(ivy-minibuffer-match-highlight ((t (:inherit highlight :foreground "green"))))
+ '(ivy-prompt-match ((t (:inherit ivy-current-match :background "white"))))
+ '(mode-line ((t (:background "dark slate gray" :foreground "green" :box nil :height 1.1))))
+ '(mode-line-inactive ((t (:height 1.0))))
  '(org-block ((t (:extend t)))))

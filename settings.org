@@ -253,7 +253,9 @@ Run M-x all-the-icons-install-fonts to do so. Please refer to the installation g
          ("C-d" . ivy-reverse-i-search-kill))
   :config
   (ivy-mode 1))
+
 #+end_src
+
 
 ** Counsel
 #+begin_src emacs-lisp
