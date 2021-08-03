@@ -43,13 +43,16 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(doom-modeline-mode t)
  '(package-selected-packages
-   '(disable-mouse visual-line-mode company-tern terraform-mode company-anaconda use-package)))
+   '(powerline-evil disable-mouse visual-line-mode company-tern terraform-mode company-anaconda use-package)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(mode-line ((t (:height 0.85))))
- '(mode-line-inactive ((t (:height 0.85))))
+
+ '(mode-line ((t (:background "dark slate gray" :foreground "green" :box nil :height 1.10))))
+ '(mode-line-inactive ((t (:height 1.00))))
+
  '(org-block ((t (:extend t)))))

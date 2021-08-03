@@ -115,25 +115,25 @@ at the top level of DIRECTORY."
 
 
 * UI 
+
 ** Theme
 #+BEGIN_SRC emacs-lisp
 (set-frame-font "Monaco 17" nil t)
+
 (use-package moe-theme
   :ensure t
   )
 
 (setq moe-theme-highlight-buffer-id t)
+
 (moe-dark)
-(moe-theme-apply-color 'red)
-
-
-
+(set-face-attribute 'minibuffer-prompt nil :foreground "#80ff00" :background "#080808")
+(set-face-attribute 'mode-line-buffer-id nil :background "dark slate gray" :foreground "#ccffff")
 
 ;; highlight parens
 (show-paren-mode t)
 (setq show-paren-style 'expression)
 #+END_SRC
-
 
 ** Mode line
 #+begin_src  emacs-lisp
@@ -141,6 +141,9 @@ at the top level of DIRECTORY."
   :ensure t
   :init (doom-modeline-mode 1)
   )
+
+(setq doom-modeline-bar-width 4)
+(setq doom-modeline-window-width-limit fill-column)
 
 
 (setq evil-normal-state-tag   (propertize "[Normal]" 'face '(:background "red" :foreground "red"))
@@ -156,6 +159,9 @@ at the top level of DIRECTORY."
 #+begin_src bash
 Run M-x all-the-icons-install-fonts to do so. Please refer to the installation guide.
 #+end_src
+
+
+
 
 ** Rainbow Delimiters
 #+begin_src emacs-lisp
