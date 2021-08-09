@@ -16,6 +16,14 @@
 
 
 * Utilities
+** Super auto save
+#+begin_src emacs-lisp
+(use-package super-save
+  :ensure t
+  :config
+  (super-save-mode +1))
+#+end_src
+
 ** Disable Mouse Click
 #+begin_src emacs-lisp
 (use-package disable-mouse
