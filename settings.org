@@ -24,6 +24,7 @@
   (super-save-mode +1))
 #+end_src
 
+
 ** Disable Mouse Click
 #+begin_src emacs-lisp
 (use-package disable-mouse
@@ -461,13 +462,49 @@ export PATH=$(go env GOPATH)/bin:$PATH
   :defer t
   )
 
+(use-package lsp-mode
+  :ensure t
+  :defer t
+  )
 
-;; (add-hook 'go-mode-hook 'company-mode)
-(add-hook 'go-mode-hook (lambda ()
-                          (set (make-local-variable 'company-backends) '(company-go))
-			      (setq tab-width 4)
-			      (setq indent-tabs-mode 1)
-                          (company-mode)))
+(use-package lsp-ui
+  :ensure t
+  :defer t
+  )
+
+
+(use-package yasnippet
+  :ensure t
+  :defer t
+  )
+
+(add-hook 'go-mode-hook #'lsp-deferred)
+
+(setq company-idle-delay 0)
+(setq company-minimum-prefix-length 1)
+
+;; Set up before-save hooks to format buffer and add/delete imports.
+;; Make sure you don't have other gofmt/goimports hooks enabled.
+(defun lsp-go-install-save-hooks ()
+  (add-hook 'before-save-hook #'lsp-format-buffer t t)
+  (add-hook 'before-save-hook #'lsp-organize-imports t t))
+(add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
+
+;; Start LSP Mode and YASnippet mode
+(add-hook 'go-mode-hook #'lsp-deferred)
+(add-hook 'go-mode-hook #'yas-minor-mode)
+ 
+;; (when (memq window-system '(mac ns))
+;;   (exec-path-from-shell-initialize)
+;;   (exec-path-from-shell-copy-env "GOPATH"))
+;; 
+;; 
+;; ;; (add-hook 'go-mode-hook 'company-mode)
+;; (add-hook 'go-mode-hook (lambda ()
+;;                           (set (make-local-variable 'company-backends) '(company-go))
+;; 			      (setq tab-width 4)
+;; 			      (setq indent-tabs-mode 1)
+;;                           (company-mode)))
 #+end_src
 
 

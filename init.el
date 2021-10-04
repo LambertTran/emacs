@@ -45,7 +45,7 @@
  ;; If there is more than one, they won't work right.
  '(doom-modeline-mode t)
  '(package-selected-packages
-   '(super-save powerline-evil disable-mouse visual-line-mode company-tern terraform-mode company-anaconda use-package)))
+   '(lsp-ui yasnippet lsp-mode go-autocomplete super-save powerline-evil disable-mouse visual-line-mode company-tern terraform-mode company-anaconda use-package)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
