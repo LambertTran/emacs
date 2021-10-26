@@ -28,9 +28,11 @@
   :ensure t
   :defer t
   :config
+  (require 'org-habit)
+  (add-to-list 'org-modules 'org-habit)
+  (setq org-habit-graph-column 60)
   (setq org-ellipsis " ▾")
-  (setq org-hide-emphasis-markers t)
-  )
+  (setq org-hide-emphasis-markers t))
 
 (org-babel-load-file
  (expand-file-name "settings.org"

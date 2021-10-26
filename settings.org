@@ -223,6 +223,7 @@ Run M-x all-the-icons-install-fonts to do so. Please refer to the installation g
 ** Utilities
 #+BEGIN_SRC emacs-lisp
 ;; insert src org
+(global-set-key (kbd "C-c a") 'org-agenda-list)
 (global-set-key (kbd "C-c s") 'org-insert-structure-template)
 (evil-define-key 'normal org-mode-map (kbd "<tab>") #'org-cycle)
 (set-face-foreground 'org-block-begin-line "#4e4e4e")
@@ -239,6 +240,63 @@ Run M-x all-the-icons-install-fonts to do so. Please refer to the installation g
       org-src-tab-acts-natively t
       org-startup-indented t)
 #+END_SRC
+
+
+** Org Agenda
+#+begin_src emacs-lisp
+(setq org-agenda-files
+      '("~/org-agenda/todos.org"
+	    "~/org-agenda/habits.org"
+	    "~/org-agenda/journal.org"))
+(setq org-agenda-start-with-log-mode t)
+(setq org-log-done 'time)
+(setq org-log-into-drawer t)
+#+end_src
+
+
+** Org Capture Template
+#+begin_src emacs-lisp
+  (setq org-capture-templates
+    `(("t" "Tasks / Projects")
+      ("tt" "Task" entry (file+olp "~/org-agenda/todos.org" "Inbox")
+           "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
+
+      ("j" "Journal Entries")
+      ("jj" "Journal" entry
+           (file+olp+datetree "~/org-agenda/journal.org")
+           "\n* %<%I:%M %p> - Journal \n%?\n\n"
+           ;; ,(dw/read-file-as-string "~/Notes/Templates/Daily.org")
+           :empty-lines 1)
+       ))
+#+end_src
+
+
+** TODO Icons
+#+begin_src emacs-lisp
+(customize-set-value
+    'org-agenda-category-icon-alist
+    `(
+      ("agenda" "~/.emacs.d/icons/work.svg" nil nil :ascent center :mask heuristic)
+      ("habit" "~/.emacs.d/icons/chore.svg" nil nil :ascent center :mask heuristic)
+      ("events" "~/.emacs.d/icons/events.svg" nil nil :ascent center :mask heuristic)
+      ("inbox" "~/.emacs.d/icons/inbox.svg" nil nil :ascent center :mask heuristic)
+      ("walk" "~/.emacs.d/icons/walk.svg" nil nil :ascent center :mask heuristic)
+      ("solution" "~/.emacs.d/icons/solution.svg" nil nil :ascent center :mask heuristic)
+      ("community" "~/.emacs.d/icons/community.svg" nil nil :ascent center :mask heuristic)
+      ("idea" "~/.emacs.d/icons/idea.svg" nil nil :ascent center :mask heuristic)
+      ("man" "~/.emacs.d/icons/man.svg" nil nil :ascent center :mask heuristic)
+      ("scheduled" "~/.emacs.d/icons/scheduled.svg" nil nil :ascent center :mask heuristic)
+      ("class" "~/.emacs.d/icons/class.svg" nil nil :ascent center :mask heuristic)
+      ("plant" "~/.emacs.d/icons/plant.svg" nil nil :ascent center :mask heuristic)
+      ("check" "~/.emacs.d/icons/check.svg" nil nil :ascent center :mask heuristic)
+      ("search" "~/.emacs.d/icons/search.svg" nil nil :ascent center :mask heuristic)
+      ("home" "~/.emacs.d/icons/home.svg" nil nil :ascent center :mask heuristic)
+      ("book" "~/.emacs.d/icons/book.svg" nil nil :ascent center :mask heuristic)
+      ("cook" "~/.emacs.d/icons/cook.svg" nil nil :ascent center :mask heuristic)
+      ("buy" "~/.emacs.d/icons/buy.svg" nil nil :ascent center :mask heuristic)
+      ("shower" "~/.emacs.d/icons/shower.svg" nil nil :ascent center :mask heuristic)
+      ))
+#+end_src
 
 
 * Search Completion
