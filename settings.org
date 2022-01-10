@@ -170,8 +170,6 @@ Run M-x all-the-icons-install-fonts to do so. Please refer to the installation g
 #+end_src
 
 
-
-
 ** Rainbow Delimiters
 #+begin_src emacs-lisp
 (use-package rainbow-delimiters
@@ -536,6 +534,7 @@ export PATH=$(go env GOPATH)/bin:$PATH
   :defer t
   )
 
+
 (add-hook 'go-mode-hook #'lsp-deferred)
 
 (setq company-idle-delay 0)
@@ -551,6 +550,11 @@ export PATH=$(go env GOPATH)/bin:$PATH
 ;; Start LSP Mode and YASnippet mode
 (add-hook 'go-mode-hook #'lsp-deferred)
 (add-hook 'go-mode-hook #'yas-minor-mode)
+
+;; Set tab width
+(add-hook 'go-mode-hook (lambda()
+	(setq tab-width 4)
+))
  
 ;; (when (memq window-system '(mac ns))
 ;;   (exec-path-from-shell-initialize)
@@ -579,5 +583,29 @@ export PATH=$(go env GOPATH)/bin:$PATH
   :config
          (setq dumb-jump-selector 'helm)
   )
+#+end_src
+
+** Syntax checker
+#+begin_src emacs-lisp
+(use-package flycheck
+  :ensure t
+  )
+(global-flycheck-mode 1)
+#+end_src
+
+** DAP mode - debugging
+#+begin_src emacs-lisp
+(use-package dap-mode
+  :ensure t
+  )
+(require 'dap-go)
+(require 'dap-hydra)
+(use-package dap-ui
+
+:ensure nil
+
+:config
+
+(dap-ui-mode 1))
 #+end_src
 
