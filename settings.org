@@ -296,6 +296,24 @@ Run M-x all-the-icons-install-fonts to do so. Please refer to the installation g
       ))
 #+end_src
 
+** Source block
+#+begin_src emacs-lisp
+(require 'org-tempo)
+(add-to-list 'org-structure-template-alist '("sh" . "src shell"))
+(add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+(add-to-list 'org-structure-template-alist '("go" . "src go :results output"))
+#+end_src
+
+** Execute code
+#+begin_src emacs-lisp
+;;(require 'ob-go)
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((go . t)))
+
+;; babel will not ask for perm to execute code
+(setq org-confirm-babel-evaluate nil)
+#+end_src
 
 * Search Completion
 ** Ivy mode
@@ -390,7 +408,15 @@ M-x company-diag: show company backend
 (global-set-key (kbd "C-c l") 'git-link)
 
 #+end_src
-
+** Evil Integration
+#+begin_src emacs-lisp
+(use-package evil-collection
+  :ensure t
+  :after evil
+  :init
+  (evil-collection-init)
+  )
+#+end_src
 
 * Programming
 ** Python
@@ -609,3 +635,21 @@ export PATH=$(go env GOPATH)/bin:$PATH
 (dap-ui-mode 1))
 #+end_src
 
+
+** DAP mode - debugging
+https://github.com/emacs-eaf/emacs-application-framework
+#+begin_src emacs-lisp
+;; (add-to-list 'load-path "~/.emacs.d/site-lisp/emacs-application-framework/")
+;; (require 'eaf)
+;; (require 'eaf-demo)
+;; (require 'eaf-rss-reader)
+;; (require 'eaf-terminal)
+;; (require 'eaf-pdf-viewer)
+;; (require 'eaf-browser)
+;; (require 'eaf-markdown-previewer)
+;; (require 'eaf-file-browser)
+;; (require 'eaf-file-manager)
+;; (require 'eaf-mindmap)
+;; (require 'eaf-org-previewer)
+;; (require 'eaf-system-monitor)
+#+end_src
