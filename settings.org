@@ -1,5 +1,6 @@
 * Turn off menu bar
 #+BEGIN_SRC emacs-lisp
+(setq evil-want-keybinding 'nil)
 (menu-bar-mode -1)
 (tool-bar-mode -1)
 (tooltip-mode -1)
@@ -11,6 +12,9 @@
 (electric-pair-mode 1)
 (setq electric-pair-preserve-balance nil)
 (setq ring-bell-function 'ignore)
+
+;; ECS cancels all
+(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 #+END_SRC
 
 
@@ -23,7 +27,13 @@
   :config
   (super-save-mode +1))
 #+end_src
-
+** Trim white space
+#+begin_src emacs-lisp
+(use-package ws-butler
+  :ensure t
+  )
+(ws-butler-global-mode)
+#+end_src
 
 ** Disable Mouse Click
 #+begin_src emacs-lisp
@@ -123,8 +133,7 @@ at the top level of DIRECTORY."
 #+END_SRC
 
 
-* UI 
-
+* UI
 ** Theme
 #+BEGIN_SRC emacs-lisp
 (set-frame-font "Monaco 17" nil t)
@@ -354,7 +363,8 @@ Run M-x all-the-icons-install-fonts to do so. Please refer to the installation g
   :custom
   (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only)
   :config
-  (setq ivy-initial-inputs-alist nil)) ;; Don't start searches with ^
+  (setq ivy-initial-inputs-alist nil) ;; Don't start searches with ^
+  )
 
 ;; Adds M-x recent command sorting for counsel-M-x
 (use-package smex
@@ -416,9 +426,11 @@ M-x company-diag: show company backend
   :init
   (evil-collection-init)
   )
+
 #+end_src
 
 * Programming
+
 ** Python
 - http://tkf.github.io/emacs-jedi/latest/
 
@@ -537,6 +549,11 @@ export PATH=$(go env GOPATH)/bin:$PATH
 (use-package go-mode
   :ensure t
   :defer t
+  :config
+  (require 'dap-go)
+  (require 'dap-hydra)
+  (dap-go-setup)
+  (setq dap-print-io t)
   )
 
 (use-package company-go
@@ -620,36 +637,29 @@ export PATH=$(go env GOPATH)/bin:$PATH
 #+end_src
 
 ** DAP mode - debugging
+- In case of error, check DAP mode session via Ctrl - x - b 
 #+begin_src emacs-lisp
 (use-package dap-mode
   :ensure t
   )
-(require 'dap-go)
-(require 'dap-hydra)
 (use-package dap-ui
-
 :ensure nil
-
 :config
-
 (dap-ui-mode 1))
 #+end_src
 
-
-** DAP mode - debugging
-https://github.com/emacs-eaf/emacs-application-framework
+** Kubernetes mode
 #+begin_src emacs-lisp
-;; (add-to-list 'load-path "~/.emacs.d/site-lisp/emacs-application-framework/")
-;; (require 'eaf)
-;; (require 'eaf-demo)
-;; (require 'eaf-rss-reader)
-;; (require 'eaf-terminal)
-;; (require 'eaf-pdf-viewer)
-;; (require 'eaf-browser)
-;; (require 'eaf-markdown-previewer)
-;; (require 'eaf-file-browser)
-;; (require 'eaf-file-manager)
-;; (require 'eaf-mindmap)
-;; (require 'eaf-org-previewer)
-;; (require 'eaf-system-monitor)
+;; (use-package kubernetes
+;;   :ensure t
+;;   :commands (kubernetes-overview)
+;;   :config
+;;   (setq kubernetes-poll-frequency 3600
+;;         kubernetes-redraw-frequency 3600))
+#+end_src
+
+** Compiling
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-c p") 'compile)
+(global-set-key (kbd "C-c k") 'kill-compilation)
 #+end_src
