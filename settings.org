@@ -660,6 +660,9 @@ export PATH=$(go env GOPATH)/bin:$PATH
 
 ** Compiling
 #+begin_src emacs-lisp
-(global-set-key (kbd "C-c p") 'compile)
+(global-set-key (kbd "C-c p") 'project-compile)
 (global-set-key (kbd "C-c k") 'kill-compilation)
+(add-hook 'compilation-filter-hook #'ansi-color-compilation-filter)
+(setq compilation-scroll-output t)
+
 #+end_src
