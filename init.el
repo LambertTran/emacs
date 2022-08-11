@@ -47,7 +47,7 @@
  ;; If there is more than one, they won't work right.
  '(doom-modeline-mode t)
  '(package-selected-packages
-   '(org-make-toc toc-org ws-butler kubernetes-evil kubernetes org-tempo org-temp ob-go protobuf-mode dap-go lsp-ui yasnippet lsp-mode go-autocomplete super-save powerline-evil disable-mouse visual-line-mode company-tern terraform-mode company-anaconda use-package))
+   '(company-yasnippet org-make-toc toc-org ws-butler kubernetes-evil kubernetes org-tempo org-temp ob-go protobuf-mode dap-go lsp-ui yasnippet lsp-mode go-autocomplete super-save powerline-evil disable-mouse visual-line-mode company-tern terraform-mode company-anaconda use-package))
  '(warning-suppress-log-types '((use-package) (use-package) (comp)))
  '(warning-suppress-types '((use-package) (comp))))
 (custom-set-faces

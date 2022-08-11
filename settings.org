@@ -562,7 +562,21 @@ export PATH=$(go env GOPATH)/bin:$PATH
 	  (nilness . t)))
   )
 
+
+(use-package yasnippet
+  :ensure t
+  :defer t
+  (setq yas-snippet-dirs '(expand-file-name "." user-emacs-directory))
+  (yas-global-mode 1)
+  )
+
 (use-package company-go
+  :ensure t
+  :defer t
+  )
+
+
+(use-package company-yasnippet
   :ensure t
   :defer t
   )
@@ -578,10 +592,6 @@ export PATH=$(go env GOPATH)/bin:$PATH
   )
 
 
-(use-package yasnippet
-  :ensure t
-  :defer t
-  )
 
 
 (add-hook 'go-mode-hook #'lsp-deferred)
