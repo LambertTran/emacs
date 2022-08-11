@@ -64,3 +64,4 @@
  '(mode-line ((t (:background "dark slate gray" :foreground "green" :box nil :height 1.1))))
  '(mode-line-inactive ((t (:height 1.0))))
  '(org-block ((t (:extend t)))))
+(put 'upcase-region 'disabled nil)

@@ -531,6 +531,7 @@ M-x company-diag: show company backend
 
 ** Golang
 - source: https://github.com/mdempsky/gocode
+- need to install gopls
 
 #+begin_src bash
 go get -u github.com/mdempsky/gocode
@@ -554,6 +555,11 @@ export PATH=$(go env GOPATH)/bin:$PATH
   (require 'dap-hydra)
   (dap-go-setup)
   (setq dap-print-io t)
+  (setq lsp-go-analyses
+	'((fieldalignment . t)
+	  (unusedwrite . t)
+	  (unusedparams . t)
+	  (nilness . t)))
   )
 
 (use-package company-go
@@ -587,10 +593,11 @@ export PATH=$(go env GOPATH)/bin:$PATH
 ;; Make sure you don't have other gofmt/goimports hooks enabled.
 (defun lsp-go-install-save-hooks ()
   (add-hook 'before-save-hook #'lsp-format-buffer t t)
-  (add-hook 'before-save-hook #'lsp-organize-imports t t))
+;  (add-hook 'before-save-hook #'lsp-organize-imports t t)
+  )
 (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
-
-;; Start LSP Mode and YASnippet mode
+;
+;;; Start LSP Mode and YASnippet mode
 (add-hook 'go-mode-hook #'lsp-deferred)
 (add-hook 'go-mode-hook #'yas-minor-mode)
 
@@ -598,12 +605,12 @@ export PATH=$(go env GOPATH)/bin:$PATH
 (add-hook 'go-mode-hook (lambda()
 	(setq tab-width 4)
 ))
- 
+
 ;; (when (memq window-system '(mac ns))
 ;;   (exec-path-from-shell-initialize)
 ;;   (exec-path-from-shell-copy-env "GOPATH"))
-;; 
-;; 
+;;
+;;
 ;; ;; (add-hook 'go-mode-hook 'company-mode)
 ;; (add-hook 'go-mode-hook (lambda ()
 ;;                           (set (make-local-variable 'company-backends) '(company-go))
