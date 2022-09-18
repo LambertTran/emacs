@@ -153,6 +153,7 @@ at the top level of DIRECTORY."
 (setq show-paren-style 'expression)
 #+END_SRC
 
+
 ** Mode line
 #+begin_src  emacs-lisp
 (use-package doom-modeline
@@ -200,6 +201,9 @@ Run M-x all-the-icons-install-fonts to do so. Please refer to the installation g
     (show-paren-mode t)))
 
 #+end_src
+
+
+** Treemacs
 
 
 * Org
@@ -316,13 +320,14 @@ Run M-x all-the-icons-install-fonts to do so. Please refer to the installation g
 ** Execute code
 #+begin_src emacs-lisp
 ;;(require 'ob-go)
-(org-babel-do-load-languages
- 'org-babel-load-languages
- '((go . t)))
+;;(org-babel-do-load-languages
+;; 'org-babel-load-languages
+;; '((go . t)))
 
 ;; babel will not ask for perm to execute code
 (setq org-confirm-babel-evaluate nil)
 #+end_src
+
 
 * Search Completion
 ** Ivy mode
@@ -430,6 +435,33 @@ M-x company-diag: show company backend
 #+end_src
 
 * Programming
+** Language server Protocol
+#+begin_src emacs-lisp
+(use-package lsp-mode
+  :ensure t
+  :defer t
+  :hook
+  (sh-mode . lsp)
+  (html-mode . lsp)
+  )
+
+(use-package lsp-ui
+  :ensure t
+  :defer t
+  (setq lsp-ui-sideline-enable nil
+	    lsp-ui-doc-delay 2)
+  :hook (lsp-mode . lsp-ui-mode)
+  :bind (:map lsp-ui-mode-map
+	      ("C-c i" . lsp-ui-imenu))
+  )
+#+end_src
+** html
+#+begin_src emacs-lisp
+(use-package html-ls
+  :ensure t
+  :defer t
+  )
+#+end_src
 
 ** Python
 - http://tkf.github.io/emacs-jedi/latest/
@@ -440,27 +472,61 @@ M-x company-diag: show company backend
 ;;    :after company
 ;; )
 ;; (add-hook 'python-mode-hook 'jedi:setup)
-;; (setq jedi:complete-on-dot t)                 
+;; (setq jedi:complete-on-dot t)
 
 
-(use-package anaconda-mode
-  :ensure t
-)
-(setq company-dabbrev-downcase 0)
-(setq company-idle-delay 0)
-(add-hook 'python-mode-hook 'anaconda-mode)
-
-(use-package company-anaconda
-  :ensure t
-  :after company
-)
-(add-hook 'python-mode-hook
-	  (lambda()
-	    (setq company-backends '(company-anaconda)))
-	  )
+;; (use-package anaconda-mode
+;;   :ensure t
+;; )
+;; (setq company-dabbrev-downcase 0)
+;; (setq company-idle-delay 0)
+;; (add-hook 'python-mode-hook 'anaconda-mode)
+;;
+;; (use-package company-anaconda
+;;   :ensure t
+;;   :after company
+;; )
+;; (add-hook 'python-mode-hook
+;; 	  (lambda()
+;; 	    (setq company-backends '(company-anaconda)))
+;; 	  )
 
 ;; (eval-after-load "company"
 ;;   '(add-to-list 'company-backends 'company-anaconda))
+
+(use-package python
+  :ensure t
+  :config
+  ;; Remove guess indent python message
+  (setq python-indent-guess-indent-offset-verbose nil)
+  ;; Use IPython when available or fall back to regular Python
+  (cond
+   ((executable-find "ipython")
+    (progn
+      (setq python-shell-buffer-name "IPython")
+      (setq python-shell-interpreter "ipython")
+      (setq python-shell-interpreter-args "-i --simple-prompt")))
+   ((executable-find "python3")
+    (setq python-shell-interpreter "python3"))
+   ((executable-find "python2")
+    (setq python-shell-interpreter "python2"))
+   (t
+    (setq python-shell-interpreter "python"))))
+
+(use-package lsp-pyright
+  :ensure t
+  :defer t
+  :config
+  (setq lsp-clients-python-library-directories '("/usr/" "~/miniconda3/pkgs"))
+  (setq lsp-pyright-disable-language-service nil
+	lsp-pyright-disable-organize-imports nil
+	lsp-pyright-auto-import-completions t
+	lsp-pyright-use-library-code-for-types t)
+  :hook ((python-mode . (lambda ()
+                          (require 'lsp-pyright) (lsp-deferred)))))
+
+
+(add-hook 'python-mode #'lsp-deferred)
 #+end_src
 
 - Manual Step
@@ -581,17 +647,6 @@ export PATH=$(go env GOPATH)/bin:$PATH
   :defer t
   )
 
-(use-package lsp-mode
-  :ensure t
-  :defer t
-  )
-
-(use-package lsp-ui
-  :ensure t
-  :defer t
-  )
-
-
 
 
 (add-hook 'go-mode-hook #'lsp-deferred)
@@ -630,6 +685,9 @@ export PATH=$(go env GOPATH)/bin:$PATH
 #+end_src
 
 
+** Bash
+- install https://github.com/bash-lsp/bash-language-server
+
 ** Dumb Jump
 #+begin_src emacs-lisp
 (use-package dumb-jump
@@ -645,25 +703,33 @@ export PATH=$(go env GOPATH)/bin:$PATH
   )
 #+end_src
 
+
 ** Syntax checker
 #+begin_src emacs-lisp
-(use-package flycheck
-  :ensure t
-  )
-(global-flycheck-mode 1)
+;; (use-package flycheck
+;;   :ensure t
+;;   )
+;; (global-flycheck-mode 1)
 #+end_src
+
 
 ** DAP mode - debugging
 - In case of error, check DAP mode session via Ctrl - x - b 
 #+begin_src emacs-lisp
 (use-package dap-mode
   :ensure t
+  :defer t
+  :after lsp-mode
+  :config
+  (dap-auto-configure-mode)
   )
+
 (use-package dap-ui
 :ensure nil
 :config
 (dap-ui-mode 1))
 #+end_src
+
 
 ** Kubernetes mode
 #+begin_src emacs-lisp
@@ -674,6 +740,7 @@ export PATH=$(go env GOPATH)/bin:$PATH
 ;;   (setq kubernetes-poll-frequency 3600
 ;;         kubernetes-redraw-frequency 3600))
 #+end_src
+
 
 ** Compiling
 #+begin_src emacs-lisp
