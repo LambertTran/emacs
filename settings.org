@@ -1,7 +1,8 @@
 * Turn off menu bar
 #+BEGIN_SRC emacs-lisp
 (setq evil-want-keybinding 'nil)
-(menu-bar-mode -1)
+;; menu is not available in Mac
+;; (menu-bar-mode -1)
 (tool-bar-mode -1)
 (tooltip-mode -1)
 (global-display-line-numbers-mode 1)
@@ -15,6 +16,9 @@
 
 ;; ECS cancels all
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+
+;; 
+(global-set-key (kbd "C-x k") 'kill-this-buffer)
 #+END_SRC
 
 
@@ -27,23 +31,15 @@
   :config
   (super-save-mode +1))
 #+end_src
+
 ** Trim white space
 #+begin_src emacs-lisp
 (use-package ws-butler
   :ensure t
+  ;; enable for all programing modes
+  :hook (prog-mode . ws-butler-mode)
   )
-(ws-butler-global-mode)
 #+end_src
-
-** Disable Mouse Click
-#+begin_src emacs-lisp
-(use-package disable-mouse
-  :ensure t
-  )
-
-(global-disable-mouse-mode)
-#+end_src
-
 
 ** Clipboard
 #+begin_src emacs-lisp
@@ -71,18 +67,183 @@
 (setq mac-option-modifier 'meta)
 #+end_src
 
-** Random key bindings
-#+begin_src emacs-lisp
-(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
-(global-set-key (kbd "C-x k") 'kill-this-buffer)
-#+end_src
-
 ** Backup
 #+begin_src emacs-lisp
 ; Backup
 (setq create-lockfiles nil)
 (setq backup-directory-alist `(("." . "~/.saves")))
 (setq auto-save-file-name-transforms `((".*" ,"~/.saves" t)))
+#+end_src
+
+
+* UI
+** Theme
+#+BEGIN_SRC emacs-lisp
+(set-frame-font "Monaco 17" nil t)
+
+(use-package moe-theme
+  :ensure t
+  )
+ 
+(setq moe-theme-highlight-buffer-id t)
+ 
+(moe-dark)
+(set-face-attribute 'minibuffer-prompt nil :foreground "#80ff00" :background "#080808")
+(set-face-attribute 'mode-line-buffer-id nil :background "dark slate gray" :foreground "#ccffff")
+ 
+;; highlight parens
+(show-paren-mode t)
+(setq show-paren-style 'expression)
+#+END_SRC
+
+** Mode line
+#+begin_src  emacs-lisp
+(use-package doom-modeline
+  :ensure t
+  :init (doom-modeline-mode 1)
+  )
+
+(setq doom-modeline-bar-width 4)
+(setq doom-modeline-window-width-limit fill-column)
+
+(use-package all-the-icons
+  :ensure t
+  )
+
+
+(setq evil-normal-state-tag   (propertize "[Normal]" 'face '(:background "red" :foreground "red"))
+      evil-emacs-state-tag    (propertize "[Emacs]" 'face '((:background "orange" :foreground "red")))
+      evil-insert-state-tag   (propertize "[Insert]" 'face '((:background "red") :foreground "white"))
+      evil-motion-state-tag   (propertize "[Motion]" 'face '((:background "blue") :foreground "white"))
+      evil-visual-state-tag   (propertize "[Visual]" 'face '((:background "grey80" :foreground "red")))
+      evil-operator-state-tag (propertize "[Operator]" 'face '((:background "purple"))))
+#+end_src
+
+
+*** Manual step
+#+begin_src bash
+Run M-x all-the-icons-install-fonts
+#+end_src
+
+** Rainbow Delimiters
+#+begin_src emacs-lisp
+(use-package rainbow-delimiters
+  :ensure t
+  :hook (prog-mode . rainbow-delimiters-mode)
+  )
+#+end_src
+
+** Smart Parans
+#+begin_src emacs-lisp
+(use-package smartparens
+  :ensure t
+  )
+
+(use-package smartparens-config
+  :ensure smartparens
+  :diminish smartparens-mode
+  :config
+  (progn
+    (require 'smartparens-config)
+    (smartparens-global-mode 1)
+    (show-paren-mode t)))
+
+#+end_src
+
+** Treemac
+#+begin_src emacs-lisp
+(use-package treemacs
+  :ensure t
+  :defer t
+  :init
+  (with-eval-after-load 'winum
+    (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
+  :config
+    (treemacs-follow-mode t)
+    (treemacs-filewatch-mode t)
+    (treemacs-fringe-indicator-mode 'always)
+    (when treemacs-python-executable
+      (treemacs-git-commit-diff-mode t))
+  :bind
+  (:map global-map
+        ("M-0"       . treemacs-select-window)
+        ("C-x t 1"   . treemacs-delete-other-windows)
+        ("C-x t t"   . treemacs)
+        ("C-x t d"   . treemacs-select-directory)
+        ("C-x t B"   . treemacs-bookmark)
+        ("C-x t C-t" . treemacs-find-file)
+        ("C-x t M-t" . treemacs-find-tag))
+  )
+
+(use-package treemacs-evil
+  :after (treemacs evil)
+  :ensure t)
+
+(use-package treemacs-projectile
+  :after (treemacs projectile)
+  :ensure t)
+
+(use-package treemacs-icons-dired
+  :hook (dired-mode . treemacs-icons-dired-enable-once)
+  :ensure t)
+
+(use-package treemacs-magit
+  :after (treemacs magit)
+  :ensure t)
+
+(use-package lsp-treemacs
+  :after (treemacs lsp-mode)
+  :ensure t
+  )
+#+end_src
+
+
+* Search Completion
+** Ivy mode
+#+begin_src emacs-lisp
+(use-package ivy
+  :ensure t
+  :diminish
+  :bind (("C-s" . swiper-isearch)
+	     ("C-a" . swiper-all-thing-at-point)
+         :map ivy-minibuffer-map
+         ("TAB" . ivy-alt-done)
+         ("C-l" . ivy-alt-done)
+         ("C-j" . ivy-next-line)
+         ("C-k" . ivy-previous-line)
+         :map ivy-switch-buffer-map
+         ("C-k" . ivy-previous-line)
+         ("C-l" . ivy-done)
+         ("C-d" . ivy-switch-buffer-kill)
+         :map ivy-reverse-i-search-map
+         ("C-k" . ivy-previous-line)
+         ("C-d" . ivy-reverse-i-search-kill))
+  :config
+  (ivy-mode 1))
+
+#+end_src
+
+** Counsel
+#+begin_src emacs-lisp
+(use-package counsel
+  :ensure t
+  :bind (("M-x" . counsel-M-x)
+         ("C-x b" . counsel-ibuffer)
+         ("C-x C-f" . counsel-find-file)
+         ("C-M-l" . counsel-imenu)
+         :map minibuffer-local-map
+         ("C-r" . 'counsel-minibuffer-history))
+  :custom
+  (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only)
+  :config
+  (setq ivy-initial-inputs-alist nil) ;; Don't start searches with ^
+  )
+
+;; Adds M-x recent command sorting for counsel-M-x
+(use-package smex
+  :ensure t
+  :defer 1
+  :after counsel)
 #+end_src
 
 
@@ -97,8 +258,15 @@
      ;; ignore  node_modules dir - JS
      (setq projectile-globally-ignored-files '( "TAGS" "*/*node_modules"))
 
+     (setq projectile-globally-ignored-directories "eln-cache")
+
      ;; remap key
      (define-key projectile-mode-map (kbd "C-q p") 'projectile-command-map)
+  )
+
+;; make sure projectile to work with counsel
+(use-package counsel-projectile
+  :ensure t
   )
 
 (defun projectile-discover-projects-in-directory (directory)
@@ -133,79 +301,6 @@ at the top level of DIRECTORY."
 #+END_SRC
 
 
-* UI
-** Theme
-#+BEGIN_SRC emacs-lisp
-(set-frame-font "Monaco 17" nil t)
-
-(use-package moe-theme
-  :ensure t
-  )
-
-(setq moe-theme-highlight-buffer-id t)
-
-(moe-dark)
-(set-face-attribute 'minibuffer-prompt nil :foreground "#80ff00" :background "#080808")
-(set-face-attribute 'mode-line-buffer-id nil :background "dark slate gray" :foreground "#ccffff")
-
-;; highlight parens
-(show-paren-mode t)
-(setq show-paren-style 'expression)
-#+END_SRC
-
-
-** Mode line
-#+begin_src  emacs-lisp
-(use-package doom-modeline
-  :ensure t
-  :init (doom-modeline-mode 1)
-  )
-
-(setq doom-modeline-bar-width 4)
-(setq doom-modeline-window-width-limit fill-column)
-
-
-(setq evil-normal-state-tag   (propertize "[Normal]" 'face '(:background "red" :foreground "red"))
-      evil-emacs-state-tag    (propertize "[Emacs]" 'face '((:background "orange" :foreground "red")))
-      evil-insert-state-tag   (propertize "[Insert]" 'face '((:background "red") :foreground "white"))
-      evil-motion-state-tag   (propertize "[Motion]" 'face '((:background "blue") :foreground "white"))
-      evil-visual-state-tag   (propertize "[Visual]" 'face '((:background "grey80" :foreground "red")))
-      evil-operator-state-tag (propertize "[Operator]" 'face '((:background "purple"))))
-#+end_src
-
-
-*** Manual step
-#+begin_src bash
-Run M-x all-the-icons-install-fonts to do so. Please refer to the installation guide.
-#+end_src
-
-
-** Rainbow Delimiters
-#+begin_src emacs-lisp
-(use-package rainbow-delimiters
-  :ensure t
-  :hook (prog-mode . rainbow-delimiters-mode)
-  )
-#+end_src
-
-
-** Smart Parans
-#+begin_src 
-(use-package smartparens-config
-  :ensure smartparens
-  :diminish smartparens-mode
-  :config
-  (progn
-    (require 'smartparens-config)
-    (smartparens-global-mode 1)
-    (show-paren-mode t)))
-
-#+end_src
-
-
-** Treemacs
-
-
 * Org
 ** Change bullet style
 #+BEGIN_SRC emacs-lisp
@@ -216,7 +311,6 @@ Run M-x all-the-icons-install-fonts to do so. Please refer to the installation g
   (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
 
 #+END_SRC
-
 
 ** Column to middle of page
 #+BEGIN_SRC emacs-lisp
@@ -229,7 +323,6 @@ Run M-x all-the-icons-install-fonts to do so. Please refer to the installation g
   :ensure t
   :hook (org-mode . org-mode-visual-fill))
 #+END_SRC
-
 
 ** Utilities
 #+BEGIN_SRC emacs-lisp
@@ -252,7 +345,6 @@ Run M-x all-the-icons-install-fonts to do so. Please refer to the installation g
       org-startup-indented t)
 #+END_SRC
 
-
 ** Org Agenda
 #+begin_src emacs-lisp
 (setq org-agenda-files
@@ -263,7 +355,6 @@ Run M-x all-the-icons-install-fonts to do so. Please refer to the installation g
 (setq org-log-done 'time)
 (setq org-log-into-drawer t)
 #+end_src
-
 
 ** Org Capture Template
 #+begin_src emacs-lisp
@@ -280,7 +371,6 @@ Run M-x all-the-icons-install-fonts to do so. Please refer to the installation g
            :empty-lines 1)
        ))
 #+end_src
-
 
 ** TODO Icons
 #+begin_src emacs-lisp
@@ -320,90 +410,18 @@ Run M-x all-the-icons-install-fonts to do so. Please refer to the installation g
 ** Execute code
 #+begin_src emacs-lisp
 ;;(require 'ob-go)
-;;(org-babel-do-load-languages
-;; 'org-babel-load-languages
-;; '((go . t)))
-
+;; (org-babel-do-load-languages
+;;  'org-babel-load-languages
+;;  '((go . t)))
+;; 
 ;; babel will not ask for perm to execute code
-(setq org-confirm-babel-evaluate nil)
-#+end_src
-
-
-* Search Completion
-** Ivy mode
-#+begin_src emacs-lisp
-(use-package ivy
-  :ensure t
-  :diminish
-  :bind (("C-s" . swiper-isearch)
-	     ("C-a" . swiper-all-thing-at-point)
-         :map ivy-minibuffer-map
-         ("TAB" . ivy-alt-done)
-         ("C-l" . ivy-alt-done)
-         ("C-j" . ivy-next-line)
-         ("C-k" . ivy-previous-line)
-         :map ivy-switch-buffer-map
-         ("C-k" . ivy-previous-line)
-         ("C-l" . ivy-done)
-         ("C-d" . ivy-switch-buffer-kill)
-         :map ivy-reverse-i-search-map
-         ("C-k" . ivy-previous-line)
-         ("C-d" . ivy-reverse-i-search-kill))
-  :config
-  (ivy-mode 1))
-
-#+end_src
-
-
-** Counsel
-#+begin_src emacs-lisp
-(use-package counsel
-  :ensure t
-  :bind (("M-x" . counsel-M-x)
-         ("C-x b" . counsel-ibuffer)
-         ("C-x C-f" . counsel-find-file)
-         ("C-M-l" . counsel-imenu)
-         :map minibuffer-local-map
-         ("C-r" . 'counsel-minibuffer-history))
-  :custom
-  (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only)
-  :config
-  (setq ivy-initial-inputs-alist nil) ;; Don't start searches with ^
-  )
-
-;; Adds M-x recent command sorting for counsel-M-x
-(use-package smex
-  :ensure t
-  :defer 1
-  :after counsel)
-#+end_src
-
-
-* Auto Completion
-#+begin_comment
-M-x company-diag: show company backend
-#+end_comment
-
-#+begin_src emacs-lisp
-(use-package company
-  :ensure t
-  ;; :hook 'emacs-startup #'global-company-mode
-  :custom
-  (company-begin-commands '(self-insert-command)) ; start autocompletion only after typing
-  (company-idle-delay .1)                         ; decrease delay before autocompletion popup shows
-  (company-minimum-prefix-length 1)
-  (company-show-numbers t)
-  (company-tooltip-align-annotations 't)
-  (company-echo-delay 0)                          ; remove annoying blinking
-  (global-company-mode t)
-  )
+;; (setq org-confirm-babel-evaluate nil)
 #+end_src
 
 
 * Git
 ** Magit
 #+begin_src emacs-lisp
-
 (use-package magit
   :ensure t
   :custom
@@ -420,9 +438,10 @@ M-x company-diag: show company backend
   :config
          (setq git-link-open-in-browser t)
   )
-(global-set-key (kbd "C-c l") 'git-link)
 
+(global-set-key (kbd "C-c l") 'git-link)
 #+end_src
+
 ** Evil Integration
 #+begin_src emacs-lisp
 (use-package evil-collection
@@ -431,8 +450,8 @@ M-x company-diag: show company backend
   :init
   (evil-collection-init)
   )
-
 #+end_src
+
 
 * Programming
 ** Language server Protocol
@@ -447,53 +466,101 @@ M-x company-diag: show company backend
 
 (use-package lsp-ui
   :ensure t
-  :defer t
-  (setq lsp-ui-sideline-enable nil
-	    lsp-ui-doc-delay 2)
   :hook (lsp-mode . lsp-ui-mode)
-  :bind (:map lsp-ui-mode-map
-	      ("C-c i" . lsp-ui-imenu))
+  :custom
+    ;; this feature is disabled by default
+    (lsp-ui-doc-show-with-cursor t) 
+    (lsp-ui-doc-delay 0.0)
+  )
+
+#+end_src
+
+** Auto Completion
+#+begin_comment
+M-x company-diag: show company backend
+#+end_comment
+
+#+begin_src emacs-lisp
+(use-package company
+  :ensure t
+  :after lsp-mode
+  :hook (prog-mode . company-mode)
+  :bind (:map company-active-map
+	      ("<tab>" . company-complete-selection))
+        (:map lsp-mode-map
+	      ("<tab>" . company-indent-or-complete-common))
+  :custom
+    ;; start autocompletion only after typing
+    (company-begin-commands '(self-insert-command)) 
+	;; decrease delay before autocompletion popup shows
+    (company-idle-delay 0.0)                         
+    (company-minimum-prefix-length 1)
+    ;; remove annoying blinking
+    (company-echo-delay 0)                          
   )
 #+end_src
-** html
+
+** Golang
+- source: https://github.com/mdempsky/gocode
+- need to install gopls
+
+#+begin_src bash
+go get -u github.com/mdempsky/gocode
+gocode close
+export GOPATH=$(go env GOPATH)
+# /Users/alirom/go
+
+export PATH=$(go env GOPATH)/bin:$PATH
+# /Users/alirom/go/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin/git:/Users/alirom/go/bin:/usr/local/go/bin:/Library/Apple/usr/bin
+#+end_src
+
+
 #+begin_src emacs-lisp
-(use-package html-ls
+(use-package go-mode
   :ensure t
   :defer t
+  :config
+  ;; (require 'dap-go)
+  ;; (require 'dap-hydra)
+  ;; (dap-go-setup)
+  ;; (setq dap-print-io t)
+  (setq lsp-go-analyses
+        '((fieldalignment . t)
+          (unusedwrite . t)
+          (unusedparams . t)
+          (nilness . t)))
   )
+
+(add-hook 'go-mode-hook #'lsp-deferred)
+
+
+(use-package company-go
+   :ensure t
+   :defer t
+   :hook (go-mode . company-mode)
+  )
+
+
+;; Set up before-save hooks to format buffer and add/delete imports.
+;; Make sure you don't have other gofmt/goimports hooks enabled.
+(defun lsp-go-install-save-hooks ()
+  (add-hook 'before-save-hook #'lsp-format-buffer t t)
+;  (add-hook 'before-save-hook #'lsp-organize-imports t t)
+  )
+(add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
+
+
+
+;; Set tab width
+(add-hook 'go-mode-hook (lambda()
+        (setq tab-width 4)
+))
 #+end_src
 
 ** Python
 - http://tkf.github.io/emacs-jedi/latest/
 
 #+begin_src emacs-lisp
-;; (use-package jedi
-;;    :ensure t
-;;    :after company
-;; )
-;; (add-hook 'python-mode-hook 'jedi:setup)
-;; (setq jedi:complete-on-dot t)
-
-
-;; (use-package anaconda-mode
-;;   :ensure t
-;; )
-;; (setq company-dabbrev-downcase 0)
-;; (setq company-idle-delay 0)
-;; (add-hook 'python-mode-hook 'anaconda-mode)
-;;
-;; (use-package company-anaconda
-;;   :ensure t
-;;   :after company
-;; )
-;; (add-hook 'python-mode-hook
-;; 	  (lambda()
-;; 	    (setq company-backends '(company-anaconda)))
-;; 	  )
-
-;; (eval-after-load "company"
-;;   '(add-to-list 'company-backends 'company-anaconda))
-
 (use-package python
   :ensure t
   :config
@@ -519,9 +586,9 @@ M-x company-diag: show company backend
   :config
   (setq lsp-clients-python-library-directories '("/usr/" "~/miniconda3/pkgs"))
   (setq lsp-pyright-disable-language-service nil
-	lsp-pyright-disable-organize-imports nil
-	lsp-pyright-auto-import-completions t
-	lsp-pyright-use-library-code-for-types t)
+        lsp-pyright-disable-organize-imports nil
+        lsp-pyright-auto-import-completions t
+        lsp-pyright-use-library-code-for-types t)
   :hook ((python-mode . (lambda ()
                           (require 'lsp-pyright) (lsp-deferred)))))
 
@@ -529,16 +596,26 @@ M-x company-diag: show company backend
 (add-hook 'python-mode #'lsp-deferred)
 #+end_src
 
-- Manual Step
-  #+begin_src bash
-# M-x jedi:install-server in Emacs
-  #+end_src
+** Compiling
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-c p") 'project-compile)
+(global-set-key (kbd "C-c k") 'kill-compilation)
+(add-hook 'compilation-filter-hook #'ansi-color-compilation-filter)
+(setq compilation-scroll-output t)
+#+end_src
 
 ** Terraform
+#+begin_src 
+- clone
+git clone https://github.com/juliosueiras/terraform-lsp.git
+#+end_src
+
 #+begin_src emacs-lisp
 (use-package terraform-mode
   :ensure t
   )
+
+(add-hook 'terraform-mode-hook #'lsp)
 
 (use-package company-terraform
   :ensure t
@@ -546,207 +623,15 @@ M-x company-diag: show company backend
 
 (company-terraform-init)
 
-(add-hook 'python-mode-hook
-	  (lambda()
-	    (setq company-backends '(company-terraform)))
-	  )
-#+end_src
 
-
-** Javascript
-#+begin_src emacs-lisp
-;; (use-package js2-mode
-;;   :ensure t
-;;   :mode "\\.js\\'"
-;;   )
-;; 
-;; (use-package tern
-;;   :ensure t
-;;   )
-;; 
-;; (use-package company-tern
-;;   :ensure t
-;;   )
-;; 
-;; (add-hook 'js2-mode-hook (lambda ()
-;;                            (tern-mode)
-;;                            (company-mode)))
-;; (use-package prettier-js
-;;   :ensure t
-;;   :hook ((js2-mode . prettier-js-mode))
-;;   :config
-;;   (setq prettier-js-show-errors nil))
-;;   (setq js2-mode-show-strict-warnings nil)
-#+End_src
-
-** Yaml
-#+begin_src emacs-lisp
-(use-package yaml-mode
-  :ensure t
-  :mode "\\.ya?ml\\'")
-#+end_src
-
-** Dockerfile
-#+begin_src emacs-lisp
-(use-package dockerfile-mode
-  :ensure t
-  :config
-  :mode "Dockerfile\\'"
-  )
-#+end_src
-
-** Golang
-- source: https://github.com/mdempsky/gocode
-- need to install gopls
-
-#+begin_src bash
-go get -u github.com/mdempsky/gocode
-gocode close
-#+end_src
-
-#+begin_export 
-export GOPATH=$(go env GOPATH)
-# /Users/alirom/go
-
-export PATH=$(go env GOPATH)/bin:$PATH
-# /Users/alirom/go/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin/git:/Users/alirom/go/bin:/usr/local/go/bin:/Library/Apple/usr/bin 
-#+end_export
-
-#+begin_src emacs-lisp
-(use-package go-mode
-  :ensure t
-  :defer t
-  :config
-  (require 'dap-go)
-  (require 'dap-hydra)
-  (dap-go-setup)
-  (setq dap-print-io t)
-  (setq lsp-go-analyses
-	'((fieldalignment . t)
-	  (unusedwrite . t)
-	  (unusedparams . t)
-	  (nilness . t)))
+(with-eval-after-load 'lsp-mode
+(add-to-list 'lsp-language-id-configuration '(terraform-mode . "terraform"))
+(lsp-register-client
+ ;; terraform-lsp is installed via go 
+ (make-lsp-client :new-connection (lsp-stdio-connection '("/Users/alirom/go/bin/terraform-lsp" "-enable-log-file"))
+                  :major-modes '(terraform-mode)
+                  :server-id 'terraform-ls))
   )
 
-
-(use-package yasnippet
-  :ensure t
-  :defer t
-  (setq yas-snippet-dirs '("~/.emacs.d/snippets"))
-  (yas-global-mode 1)
-  )
-
-(use-package company-go
-  :ensure t
-  :defer t
-  )
-
-
-(use-package company-yasnippet
-  :ensure t
-  :defer t
-  )
-
-
-
-(add-hook 'go-mode-hook #'lsp-deferred)
-
-(setq company-idle-delay 0)
-(setq company-minimum-prefix-length 1)
-
-;; Set up before-save hooks to format buffer and add/delete imports.
-;; Make sure you don't have other gofmt/goimports hooks enabled.
-(defun lsp-go-install-save-hooks ()
-  (add-hook 'before-save-hook #'lsp-format-buffer t t)
-;  (add-hook 'before-save-hook #'lsp-organize-imports t t)
-  )
-(add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
-;
-;;; Start LSP Mode and YASnippet mode
-(add-hook 'go-mode-hook #'lsp-deferred)
-(add-hook 'go-mode-hook #'yas-minor-mode)
-
-;; Set tab width
-(add-hook 'go-mode-hook (lambda()
-	(setq tab-width 4)
-))
-
-;; (when (memq window-system '(mac ns))
-;;   (exec-path-from-shell-initialize)
-;;   (exec-path-from-shell-copy-env "GOPATH"))
-;;
-;;
-;; ;; (add-hook 'go-mode-hook 'company-mode)
-;; (add-hook 'go-mode-hook (lambda ()
-;;                           (set (make-local-variable 'company-backends) '(company-go))
-;; 			      (setq tab-width 4)
-;; 			      (setq indent-tabs-mode 1)
-;;                           (company-mode)))
 #+end_src
 
-
-** Bash
-- install https://github.com/bash-lsp/bash-language-server
-
-** Dumb Jump
-#+begin_src emacs-lisp
-(use-package dumb-jump
-  :ensure t
-  :bind (("M-g o" . dumb-jump-go-other-window)
-         ("M-g j" . dumb-jump-go)
-         ("M-g b" . dumb-jump-back)
-         ("M-g i" . dumb-jump-go-prompt)
-         ("M-g x" . dumb-jump-go-prefer-external)
-         ("M-g z" . dumb-jump-go-prefer-external-other-window))
-  :config
-         (setq dumb-jump-selector 'helm)
-  )
-#+end_src
-
-
-** Syntax checker
-#+begin_src emacs-lisp
-;; (use-package flycheck
-;;   :ensure t
-;;   )
-;; (global-flycheck-mode 1)
-#+end_src
-
-
-** DAP mode - debugging
-- In case of error, check DAP mode session via Ctrl - x - b 
-#+begin_src emacs-lisp
-(use-package dap-mode
-  :ensure t
-  :defer t
-  :after lsp-mode
-  :config
-  (dap-auto-configure-mode)
-  )
-
-(use-package dap-ui
-:ensure nil
-:config
-(dap-ui-mode 1))
-#+end_src
-
-
-** Kubernetes mode
-#+begin_src emacs-lisp
-;; (use-package kubernetes
-;;   :ensure t
-;;   :commands (kubernetes-overview)
-;;   :config
-;;   (setq kubernetes-poll-frequency 3600
-;;         kubernetes-redraw-frequency 3600))
-#+end_src
-
-
-** Compiling
-#+begin_src emacs-lisp
-(global-set-key (kbd "C-c p") 'project-compile)
-(global-set-key (kbd "C-c k") 'kill-compilation)
-(add-hook 'compilation-filter-hook #'ansi-color-compilation-filter)
-(setq compilation-scroll-output t)
-
-#+end_src

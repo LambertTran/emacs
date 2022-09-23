@@ -47,7 +47,7 @@
  ;; If there is more than one, they won't work right.
  '(doom-modeline-mode t)
  '(package-selected-packages
-   '(company-yasnippet org-make-toc toc-org ws-butler kubernetes-evil kubernetes org-tempo org-temp ob-go protobuf-mode dap-go lsp-ui yasnippet lsp-mode go-autocomplete super-save powerline-evil disable-mouse visual-line-mode company-tern terraform-mode company-anaconda use-package))
+   '(treemacs company-go lsp-pyright go-mode company-lsp company-yasnippet org-make-toc toc-org ws-butler kubernetes-evil kubernetes org-tempo org-temp ob-go protobuf-mode dap-go lsp-ui yasnippet lsp-mode go-autocomplete super-save powerline-evil disable-mouse visual-line-mode company-tern terraform-mode company-anaconda use-package))
  '(warning-suppress-log-types '((use-package) (use-package) (comp)))
  '(warning-suppress-types '((use-package) (comp))))
 (custom-set-faces
@@ -63,5 +63,7 @@
  '(ivy-prompt-match ((t (:inherit ivy-current-match :background "white"))))
  '(mode-line ((t (:background "dark slate gray" :foreground "green" :box nil :height 1.1))))
  '(mode-line-inactive ((t (:height 1.0))))
- '(org-block ((t (:extend t)))))
+ '(org-block ((t (:extend t))))
+ '(rainbow-delimiters-depth-1-face ((t (:foreground "systemGreenColor" :weight bold))))
+ '(rainbow-delimiters-depth-3-face ((t (:foreground "red" :weight bold)))))
 (put 'upcase-region 'disabled nil)
