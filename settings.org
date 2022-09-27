@@ -75,6 +75,20 @@
 (setq auto-save-file-name-transforms `((".*" ,"~/.saves" t)))
 #+end_src
 
+** Dumb Jump
+#+begin_src emacs-lisp
+(use-package dumb-jump
+  :ensure t
+  :bind (("M-g o" . dumb-jump-go-other-window)
+         ("M-g j" . dumb-jump-go)
+         ("M-g b" . dumb-jump-back)
+         ("M-g i" . dumb-jump-go-prompt)
+         ("M-g x" . dumb-jump-go-prefer-external)
+         ("M-g z" . dumb-jump-go-prefer-external-other-window))
+  :config
+         (setq dumb-jump-selector 'helm)
+  )
+#+end_src
 
 * UI
 ** Theme
@@ -608,6 +622,7 @@ export PATH=$(go env GOPATH)/bin:$PATH
 #+begin_src 
 - clone
 git clone https://github.com/juliosueiras/terraform-lsp.git
+- and build
 #+end_src
 
 #+begin_src emacs-lisp
@@ -633,5 +648,30 @@ git clone https://github.com/juliosueiras/terraform-lsp.git
                   :server-id 'terraform-ls))
   )
 
+#+end_src
+
+
+** Yaml
+#+begin_src emacs-lisp
+(use-package yaml-mode
+  :ensure t
+  :mode "\\.ya?ml\\'")
+
+;; need to manually install yaml lsp
+;; M-x lsp-install-server RET yamlls RET.
+(add-hook 'yaml-mode-hook #'lsp-deferred)
+#+end_src
+
+** Dockerfile
+#+begin_src emacs-lisp
+(use-package dockerfile-mode
+  :ensure t
+  :config
+  :mode "Dockerfile\\'"
+  )
+
+;; need to manually install dockerfile lsp
+;; M-x lsp-install-server RET dockerfile-ls
+;; (add-hook 'dockerfile-mode-hook #'lsp-deferred)
 #+end_src
 
