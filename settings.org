@@ -569,6 +569,11 @@ export PATH=$(go env GOPATH)/bin:$PATH
 (add-hook 'go-mode-hook (lambda()
         (setq tab-width 4)
 ))
+
+(use-package eglot
+  :ensure t
+  )
+(add-hook 'go-mode-hook 'eglot-ensure)
 #+end_src
 
 ** Python
@@ -673,5 +678,21 @@ git clone https://github.com/juliosueiras/terraform-lsp.git
 ;; need to manually install dockerfile lsp
 ;; M-x lsp-install-server RET dockerfile-ls
 ;; (add-hook 'dockerfile-mode-hook #'lsp-deferred)
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package graphql-mode
+  :ensure t
+  )
+(add-hook 'graphql-mode-hook #'lsp-deferred)
+#+end_src
+
+** Complete double quotes
+#+begin_src emacs-lisp
+(org-babel-load-file
+ (expand-file-name "custom-modes/autopair.el"
+                   user-emacs-directory))
+(require 'autopair)
+(autopair-global-mode) ;; enable autopair in all buffers
 #+end_src
 

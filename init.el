@@ -46,8 +46,10 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(doom-modeline-mode t)
+ '(org-agenda-files
+   '("/opt/lb/emacs/settings.org" "/Users/alirom/org-agenda/todos.org" "/Users/alirom/org-agenda/habits.org" "/Users/alirom/org-agenda/journal.org"))
  '(package-selected-packages
-   '(treemacs company-go lsp-pyright go-mode company-lsp company-yasnippet org-make-toc toc-org ws-butler kubernetes-evil kubernetes org-tempo org-temp ob-go protobuf-mode dap-go lsp-ui yasnippet lsp-mode go-autocomplete super-save powerline-evil disable-mouse visual-line-mode company-tern terraform-mode company-anaconda use-package))
+   '(eglot graphql-mode treemacs company-go lsp-pyright go-mode company-lsp company-yasnippet org-make-toc toc-org ws-butler kubernetes-evil kubernetes org-tempo org-temp ob-go protobuf-mode dap-go lsp-ui yasnippet lsp-mode go-autocomplete super-save powerline-evil disable-mouse visual-line-mode company-tern terraform-mode company-anaconda use-package))
  '(warning-suppress-log-types '((use-package) (use-package) (comp)))
  '(warning-suppress-types '((use-package) (comp))))
 (custom-set-faces
