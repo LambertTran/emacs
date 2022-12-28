@@ -90,6 +90,7 @@
   )
 #+end_src
 
+
 * UI
 ** Theme
 #+BEGIN_SRC emacs-lisp
@@ -656,15 +657,14 @@ git clone https://github.com/juliosueiras/terraform-lsp.git
 
 #+end_src
 
-
 ** Yaml
+Note: Need to install yaml-lsp manually
+M-x lsp-install-server RET yamlls RET
 #+begin_src emacs-lisp
 (use-package yaml-mode
   :ensure t
   :mode "\\.ya?ml\\'")
 
-;; need to manually install yaml lsp
-;; M-x lsp-install-server RET yamlls RET.
 (add-hook 'yaml-mode-hook #'lsp-deferred)
 #+end_src
 
@@ -682,10 +682,10 @@ git clone https://github.com/juliosueiras/terraform-lsp.git
 #+end_src
 
 #+begin_src emacs-lisp
-(use-package graphql-mode
-  :ensure t
-  )
-(add-hook 'graphql-mode-hook #'lsp-deferred)
+; (use-package graphql-mode
+;   :ensure t
+;   )
+; (add-hook 'graphql-mode-hook #'lsp-deferred)
 #+end_src
 
 ** Complete double quotes
@@ -696,5 +696,18 @@ This mode does NOT work with LSP mode
 ;;                    user-emacs-directory))
 ;; (require 'autopair)
 ;; (autopair-global-mode) ;; enable autopair in all buffers
+#+end_src
+
+** Snippet
+#+begin_src emacs-lisp
+(use-package yasnippet
+  :ensure t
+  :config
+  (setq yas-snippet-dirs '("~/.emacs.d/snippets"))
+  (yas-global-mode 1)
+  (define-key yas-minor-mode-map (kbd "<tab>") nil)
+  (define-key yas-minor-mode-map (kbd "TAB") nil)
+  (define-key yas-minor-mode-map (kbd "<C-tab>") 'yas-expand)
+  )
 #+end_src
 
