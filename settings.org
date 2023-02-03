@@ -77,17 +77,17 @@
 
 ** Dumb Jump
 #+begin_src emacs-lisp
-(use-package dumb-jump
-  :ensure t
-  :bind (("M-g o" . dumb-jump-go-other-window)
-         ("M-g j" . dumb-jump-go)
-         ("M-g b" . dumb-jump-back)
-         ("M-g i" . dumb-jump-go-prompt)
-         ("M-g x" . dumb-jump-go-prefer-external)
-         ("M-g z" . dumb-jump-go-prefer-external-other-window))
-  :config
-         (setq dumb-jump-selector 'helm)
-  )
+;;(use-package dumb-jump
+;;  :ensure t
+;;  :bind (("M-g o" . dumb-jump-go-other-window)
+;;         ("M-g j" . dumb-jump-go)
+;;         ("M-g b" . dumb-jump-back)
+;;         ("M-g i" . dumb-jump-go-prompt)
+;;         ("M-g x" . dumb-jump-go-prefer-external)
+;;         ("M-g z" . dumb-jump-go-prefer-external-other-window))
+;;  :config
+;;         (setq dumb-jump-selector 'helm)
+;;  )
 #+end_src
 
 
@@ -272,9 +272,9 @@ This mode does NOT work with LSP mode
      (projectile-mode +1)
 
      ;; ignore  node_modules dir - JS
-     (setq projectile-globally-ignored-files '( "TAGS" "*/*node_modules"))
+     ;;(setq projectile-globally-ignored-files '( "TAGS" "*/*node_modules"))
 
-     (setq projectile-globally-ignored-directories "eln-cache")
+     ;;(setq projectile-globally-ignored-directories "eln-cache")
 
      ;; remap key
      (define-key projectile-mode-map (kbd "C-q p") 'projectile-command-map)
@@ -478,7 +478,11 @@ at the top level of DIRECTORY."
   :hook
   (sh-mode . lsp)
   (html-mode . lsp)
-  )
+
+  :bind (
+	 ("M-g j" . lsp-find-definition)
+	 ("M-g r" . lsp-ui-peek-find-references)
+  ))
 
 (use-package lsp-ui
   :ensure t
