@@ -24,6 +24,16 @@
 
 
 * Utilities
+** shell-command
+#+begin_src emacs-lisp
+(defun ls ()
+  "Lists the contents of the current directory."
+  (interactive)
+  (shell-command "open -a iterm ."))
+
+(global-set-key (kbd "C-x t") 'ls);
+#+end_src
+
 ** Super auto save
 #+begin_src emacs-lisp
 (use-package super-save
@@ -672,6 +682,15 @@ M-x lsp-install-server RET yamlls RET
 (add-hook 'yaml-mode-hook #'lsp-deferred)
 #+end_src
 
+** Rego
+#+begin_src emacs-lisp
+(use-package rego-mode
+  :ensure t
+  :mode "\\.rego\\'")
+; LSP-mode hasnt supported REGO yet
+;(add-hook 'rego-mode-hook #'lsp-deferred)
+#+end_src
+
 ** Dockerfile
 #+begin_src emacs-lisp
 (use-package dockerfile-mode
@@ -682,7 +701,7 @@ M-x lsp-install-server RET yamlls RET
 
 ;; need to manually install dockerfile lsp
 ;; M-x lsp-install-server RET dockerfile-ls
-;; (add-hook 'dockerfile-mode-hook #'lsp-deferred)
+(add-hook 'dockerfile-mode-hook #'lsp-deferred)
 #+end_src
 
 #+begin_src emacs-lisp
