@@ -503,6 +503,12 @@ at the top level of DIRECTORY."
     (lsp-ui-doc-delay 0.0)
   )
 
+;; Set up before-save hooks to format buffer and add/delete imports.
+;; Make sure you don't have other gofmt/goimports hooks enabled.
+(defun lsp-format-save-hook ()
+  (add-hook 'before-save-hook #'lsp-format-buffer t t)
+  (add-hook 'before-save-hook #'lsp-organize-imports t t)
+  )
 #+end_src
 
 ** Auto Completion
@@ -571,13 +577,7 @@ export PATH=$(go env GOPATH)/bin:$PATH
   )
 
 
-;; Set up before-save hooks to format buffer and add/delete imports.
-;; Make sure you don't have other gofmt/goimports hooks enabled.
-(defun lsp-go-install-save-hooks ()
-  (add-hook 'before-save-hook #'lsp-format-buffer t t)
-  (add-hook 'before-save-hook #'lsp-organize-imports t t)
-  )
-(add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
+(add-hook 'go-mode-hook #'lsp-format-save-hook)
 
 
 
@@ -651,7 +651,8 @@ git clone https://github.com/juliosueiras/terraform-lsp.git
   :ensure t
   )
 
-(add-hook 'terraform-mode-hook #'lsp)
+(add-hook 'terraform-mode-hook #'lsp-deferred)
+(add-hook 'terraform-mode-hook #'lsp-format-save-hook)
 
 (use-package company-terraform
   :ensure t
@@ -659,15 +660,21 @@ git clone https://github.com/juliosueiras/terraform-lsp.git
 
 (company-terraform-init)
 
+(setq lsp-disabled-clients '(tfls))
+(setq lsp-semantic-tokens-enable t)
+(setq lsp-semantic-tokens-honor-refresh-requests t)
+(setq lsp-enable-links t)
+(setq lsp-terraform-ls-prefill-required-fields t)
 
-(with-eval-after-load 'lsp-mode
-(add-to-list 'lsp-language-id-configuration '(terraform-mode . "terraform"))
-(lsp-register-client
- ;; terraform-lsp is installed via go 
- (make-lsp-client :new-connection (lsp-stdio-connection '("/Users/alirom/go/bin/terraform-lsp" "-enable-log-file"))
-                  :major-modes '(terraform-mode)
-                  :server-id 'terraform-ls))
-  )
+
+;; (with-eval-after-load 'lsp-mode
+;; (add-to-list 'lsp-language-id-configuration '(terraform-mode . "terraform"))
+;; (lsp-register-client
+;;  ;; terraform-lsp is installed via go 
+;;  (make-lsp-client :new-connection (lsp-stdio-connection '("/Users/alirom/go/bin/terraform-lsp" "-enable-log-file"))
+;;                   :major-modes '(terraform-mode)
+;;                   :server-id 'terraform-ls))
+;;   )
 
 #+end_src
 
