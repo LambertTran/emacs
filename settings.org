@@ -741,3 +741,21 @@ This mode does NOT work with LSP mode
   )
 #+end_src
 
+** Javascript/Typescript
+- install 
+#+begin_src 
+M-x -> lsp-install-server> ts-ls
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package web-mode
+  :ensure t
+  :mode (("\\.js\\'" . web-mode)
+	 ("\\.jsx\\'" .  web-mode)
+	 ("\\.ts\\'" . web-mode)
+	 ("\\.tsx\\'" . web-mode)
+	 ("\\.html\\'" . web-mode))
+  :commands web-mode)
+
+(add-hook 'web-mode-hook #'lsp-deferred)
+#+end_src
