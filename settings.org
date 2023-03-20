@@ -291,6 +291,7 @@ This mode does NOT work with LSP mode
 
      ;; remap key
      (define-key projectile-mode-map (kbd "C-q p") 'projectile-command-map)
+     (setq projectile-use-git-grep t)
   )
 
 ;; make sure projectile to work with counsel
