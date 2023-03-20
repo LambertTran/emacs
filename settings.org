@@ -19,6 +19,9 @@
 
 ;; 
 (global-set-key (kbd "C-x k") 'kill-this-buffer)
+
+;; disable tabbing
+(setq-default indent-tabs-mode nil)
 #+END_SRC
 
 
@@ -652,7 +655,7 @@ git clone https://github.com/juliosueiras/terraform-lsp.git
   )
 
 (add-hook 'terraform-mode-hook #'lsp-deferred)
-(add-hook 'terraform-mode-hook #'lsp-format-save-hook)
+;; (add-hook 'terraform-mode-hook #'lsp-format-save-hook)
 
 (use-package company-terraform
   :ensure t
@@ -745,6 +748,7 @@ This mode does NOT work with LSP mode
 - install 
 #+begin_src 
 M-x -> lsp-install-server> ts-ls
+npm install -g prettier
 #+end_src
 
 #+begin_src emacs-lisp
@@ -755,7 +759,24 @@ M-x -> lsp-install-server> ts-ls
 	 ("\\.ts\\'" . web-mode)
 	 ("\\.tsx\\'" . web-mode)
 	 ("\\.html\\'" . web-mode))
-  :commands web-mode)
+  :commands web-mode
+  :custom
+  (web-mode-script-padding 0) ; For vue.js SFC : no initial padding in the script section
+  (web-mode-markup-indent-offset 2) ; For html : use an indent of size 2 (default is 4)
+  (web-mode-css-indent-offset 2)
+  (web-mode-code-indent-offset 2)
+  )
 
 (add-hook 'web-mode-hook #'lsp-deferred)
+
+(use-package prettier-js
+  :ensure t
+  :custom
+  (prettier-js-show-errors nil)
+  (prettier-js-args '("--semi" "true"
+                      "--single-quote" "true"
+                      "--tab-width" "2"
+                      "--trailing-comma" "all"
+                      "--print-width" "150")))
+(add-hook 'web-mode-hook 'prettier-js-mode)
 #+end_src
