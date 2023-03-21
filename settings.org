@@ -27,6 +27,15 @@
 
 
 * Utilities
+** Force emacs to use PATH
+#+begin_src emacs-lisp
+(use-package exec-path-from-shell
+  :ensure t
+  :config
+  (exec-path-from-shell-initialize))
+
+#+end_src
+
 ** shell-command
 #+begin_src emacs-lisp
 (defun ls ()
@@ -496,6 +505,7 @@ at the top level of DIRECTORY."
   :bind (
 	 ("M-g j" . lsp-find-definition)
 	 ("M-g r" . lsp-ui-peek-find-references)
+	 ("M-g b" . xref-go-back)
   ))
 
 (use-package lsp-ui
@@ -656,7 +666,7 @@ git clone https://github.com/juliosueiras/terraform-lsp.git
   )
 
 (add-hook 'terraform-mode-hook #'lsp-deferred)
-;; (add-hook 'terraform-mode-hook #'lsp-format-save-hook)
+(add-hook 'terraform-mode-hook #'lsp-format-save-hook)
 
 (use-package company-terraform
   :ensure t
@@ -781,3 +791,25 @@ npm install -g prettier
                       "--print-width" "150")))
 (add-hook 'web-mode-hook 'prettier-js-mode)
 #+end_src
+
+* Performance
+#+begin_src emacs-lisp
+(delete-selection-mode t)
+(setq gc-cons-threshold 600000000) ; ie 100mb, default is 800kb
+(setq read-process-output-max (* 4096 1024))
+(setq lsp-prefer-capf t)
+(setq lsp-idle-delay 0.500)
+(setq lsp-print-performance t)
+(setq auto-save-default nil)
+(setq make-backup-files nil)
+(setq create-lockfiles nil)
+(setq lsp-log-io nil) ;; Don't log everything = speed
+(setq lsp-restart 'auto-restart)
+(setq lsp-ui-sideline-show-diagnostics t)
+(setq lsp-ui-sideline-show-hover t)
+(setq lsp-ui-sideline-show-code-actions t)
+(setq lsp-enable-symbol-highlighting nil)
+(setq lsp-enable-on-type-formatting nil)
+(setq lsp-signature-auto-activate nil)
+#+end_src
+
