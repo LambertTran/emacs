@@ -788,7 +788,7 @@ npm install -g prettier
                       "--single-quote" "true"
                       "--tab-width" "2"
                       "--trailing-comma" "all"
-                      "--print-width" "150")))
+                      "--print-width" "80")))
 (add-hook 'web-mode-hook 'prettier-js-mode)
 #+end_src
 
