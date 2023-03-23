@@ -806,11 +806,13 @@ npm install -g prettier
 (setq create-lockfiles nil)
 (setq lsp-log-io nil) ;; Don't log everything = speed
 (setq lsp-restart 'auto-restart)
-(setq lsp-ui-sideline-show-diagnostics t)
-(setq lsp-ui-sideline-show-hover t)
-(setq lsp-ui-sideline-show-code-actions t)
-(setq lsp-enable-symbol-highlighting nil)
 (setq lsp-enable-on-type-formatting nil)
 (setq lsp-signature-auto-activate nil)
+
+;; turn off for better performance
+(setq lsp-enable-symbol-highlighting nil)
+
+;; don't scan 3rd party javascript libraries
+(push "[/\\\\][^/\\\\]*\\.\\(json\\|html\\|jade\\)$" lsp-file-watch-ignored) ; json
 #+end_src
 

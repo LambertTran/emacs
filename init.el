@@ -46,6 +46,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(doom-modeline-mode t)
+ '(lsp-clients-typescript-preferences '(includeCompletionsForModuleExports false))
  '(org-agenda-files
    '("/opt/lb/emacs/settings.org" "/Users/alirom/org-agenda/todos.org" "/Users/alirom/org-agenda/habits.org" "/Users/alirom/org-agenda/journal.org"))
  '(package-selected-packages
