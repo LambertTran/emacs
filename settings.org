@@ -383,6 +383,9 @@ at the top level of DIRECTORY."
       org-startup-truncated nil
       org-src-tab-acts-natively t
       org-startup-indented t)
+
+;; disable image size
+(setq org-image-actual-width nil)
 #+END_SRC
 
 ** Org Agenda
@@ -811,8 +814,5 @@ npm install -g prettier
 
 ;; turn off for better performance
 (setq lsp-enable-symbol-highlighting nil)
-
-;; don't scan 3rd party javascript libraries
-(push "[/\\\\][^/\\\\]*\\.\\(json\\|html\\|jade\\)$" lsp-file-watch-ignored) ; json
 #+end_src
 
