@@ -497,6 +497,19 @@ at the top level of DIRECTORY."
 
 
 * Programming
+** Dap
+#+begin_src emacs-lisp
+(use-package dap-mode
+  :ensure t
+  :custom
+  ;; disable all dap frames
+  ;;(lsp-enable-dap-auto-configure nil)
+  (dap-auto-configure-features '(locals))
+  :config
+  (dap-ui-mode 1)
+  )
+#+end_src
+
 ** Language server Protocol
 #+begin_src emacs-lisp
 (use-package lsp-mode
@@ -568,16 +581,17 @@ export PATH=$(go env GOPATH)/bin:$PATH
 # /Users/alirom/go/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin/git:/Users/alirom/go/bin:/usr/local/go/bin:/Library/Apple/usr/bin
 #+end_src
 
+- need to install go-delv
+  #+begin_src bash
+  go install github.com/go-delve/delve/cmd/dlv@latest
+  #+end_src
+
 
 #+begin_src emacs-lisp
 (use-package go-mode
   :ensure t
   :defer t
   :config
-  ;; (require 'dap-go)
-  ;; (require 'dap-hydra)
-  ;; (dap-go-setup)
-  ;; (setq dap-print-io t)
   (setq lsp-go-analyses
         '((fieldalignment . t)
           (unusedwrite . t)
@@ -587,16 +601,15 @@ export PATH=$(go env GOPATH)/bin:$PATH
 
 (add-hook 'go-mode-hook #'lsp-deferred)
 
-
 (use-package company-go
    :ensure t
    :defer t
    :hook (go-mode . company-mode)
   )
 
-
 (add-hook 'go-mode-hook #'lsp-format-save-hook)
 
+(require 'dap-dlv-go)
 
 
 ;; Set tab width
@@ -604,10 +617,15 @@ export PATH=$(go env GOPATH)/bin:$PATH
         (setq tab-width 4)
 ))
 
-(use-package eglot
-  :ensure t
-  )
-(add-hook 'go-mode-hook 'eglot-ensure)
+;; https://github.com/golang/tools/blob/master/gopls/doc/analyzers.md
+(setq lsp-go-analyses '((shadow . t)
+                        (simplifycompositelit . :json-false)))
+
+
+;; (use-package eglot
+;;   :ensure t
+;;   )
+;; (add-hook 'go-mode-hook 'eglot-ensure)
 #+end_src
 
 ** Python
@@ -794,6 +812,17 @@ npm install -g prettier
                       "--trailing-comma" "all"
                       "--print-width" "80")))
 (add-hook 'web-mode-hook 'prettier-js-mode)
+#+end_src
+
+
+
+#+begin_src emacs-lisp
+(use-package protobuf-mode
+  :ensure t
+  :mode (
+         ("\\.proto\\'" . protobuf-mode)
+         )
+  )
 #+end_src
 
 * Performance
