@@ -106,48 +106,50 @@
 #+BEGIN_SRC emacs-lisp
 (set-frame-font "Monaco 17" nil t)
 
-(use-package moe-theme
+;; use with doom-mode-line
+;; https://github.com/doomemacs/themes
+(use-package doom-themes
   :ensure t
+  :config
+  ;; Global settings (defaults)
+  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+        doom-themes-enable-italic t) ; if nil, italics is universally disabled
+  (load-theme 'doom-one t)
+
+  ;; Enable flashing mode-line on errors
+  (doom-themes-visual-bell-config)
+  ;; Enable custom neotree theme (all-the-icons must be installed!)
+  (doom-themes-neotree-config)
+  ;; or for treemacs users
+  (setq doom-themes-treemacs-theme "doom-atom") ; use "doom-colors" for less minimal icon theme
+  (doom-themes-treemacs-config)
+  ;; Corrects (and improves) org-mode's native fontification.
+  (doom-themes-org-config))
+
+(custom-set-faces
+  `(font-lock-keyword-face ((t (:foreground ,(doom-color 'green '257)))))
   )
- 
-(setq moe-theme-highlight-buffer-id t)
- 
-(moe-dark)
-(set-face-attribute 'minibuffer-prompt nil :foreground "#80ff00" :background "#080808")
-(set-face-attribute 'mode-line-buffer-id nil :background "dark slate gray" :foreground "#ccffff")
- 
-;; highlight parens
-(show-paren-mode t)
-(setq show-paren-style 'expression)
+
 #+END_SRC
 
 ** Mode line
 #+begin_src  emacs-lisp
+;; https://github.com/seagle0128/doom-modeline#install
+;; use with nerd-icons
 (use-package doom-modeline
   :ensure t
-  :init (doom-modeline-mode 1)
-  )
+  :init (doom-modeline-mode 1))
 
-(setq doom-modeline-bar-width 4)
-(setq doom-modeline-window-width-limit fill-column)
-
-(use-package all-the-icons
+;; https://github.com/rainstormstudio/nerd-icons.el#installing-fonts
+(use-package nerd-icons
   :ensure t
   )
-
-
-(setq evil-normal-state-tag   (propertize "[Normal]" 'face '(:background "red" :foreground "red"))
-      evil-emacs-state-tag    (propertize "[Emacs]" 'face '((:background "orange" :foreground "red")))
-      evil-insert-state-tag   (propertize "[Insert]" 'face '((:background "red") :foreground "white"))
-      evil-motion-state-tag   (propertize "[Motion]" 'face '((:background "blue") :foreground "white"))
-      evil-visual-state-tag   (propertize "[Visual]" 'face '((:background "grey80" :foreground "red")))
-      evil-operator-state-tag (propertize "[Operator]" 'face '((:background "purple"))))
 #+end_src
 
 
 *** Manual step
 #+begin_src bash
-Run M-x all-the-icons-install-fonts
+Run M-x nerd-icons-install-fonts
 #+end_src
 
 ** Rainbow Delimiters
