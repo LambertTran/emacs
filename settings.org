@@ -98,22 +98,6 @@
 (setq auto-save-file-name-transforms `((".*" ,"~/.saves" t)))
 #+end_src
 
-** Dumb Jump
-#+begin_src emacs-lisp
-;;(use-package dumb-jump
-;;  :ensure t
-;;  :bind (("M-g o" . dumb-jump-go-other-window)
-;;         ("M-g j" . dumb-jump-go)
-;;         ("M-g b" . dumb-jump-back)
-;;         ("M-g i" . dumb-jump-go-prompt)
-;;         ("M-g x" . dumb-jump-go-prefer-external)
-;;         ("M-g z" . dumb-jump-go-prefer-external-other-window))
-;;  :config
-;;         (setq dumb-jump-selector 'helm)
-;;  )
-#+end_src
-
-
 * UI
 ** Theme
 #+BEGIN_SRC emacs-lisp
@@ -171,72 +155,6 @@ Run M-x all-the-icons-install-fonts
   )
 #+end_src
 
-** Smart Parans
-This mode does NOT work with LSP mode
-#+begin_src emacs-lisp
-;; (use-package smartparens
-;;   :ensure t
-;;   )
-;; 
-;; (use-package smartparens-config
-;;   :ensure smartparens
-;;   :diminish smartparens-mode
-;;   :config
-;;   (progn
-;;     (require 'smartparens-config)
-;;     (smartparens-global-mode 1)
-;;     (show-paren-mode t)))
-
-#+end_src
-
-** Treemac
-#+begin_src emacs-lisp
-(use-package treemacs
-  :ensure t
-  :defer t
-  :init
-  (with-eval-after-load 'winum
-    (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
-  :config
-    (treemacs-follow-mode t)
-    (treemacs-filewatch-mode t)
-    (treemacs-fringe-indicator-mode 'always)
-    (when treemacs-python-executable
-      (treemacs-git-commit-diff-mode t))
-  :bind
-  (:map global-map
-        ("M-0"       . treemacs-select-window)
-        ("C-x t 1"   . treemacs-delete-other-windows)
-        ("C-x t t"   . treemacs)
-        ("C-x t d"   . treemacs-select-directory)
-        ("C-x t B"   . treemacs-bookmark)
-        ("C-x t C-t" . treemacs-find-file)
-        ("C-x t M-t" . treemacs-find-tag))
-  )
-
-(use-package treemacs-evil
-  :after (treemacs evil)
-  :ensure t)
-
-(use-package treemacs-projectile
-  :after (treemacs projectile)
-  :ensure t)
-
-(use-package treemacs-icons-dired
-  :hook (dired-mode . treemacs-icons-dired-enable-once)
-  :ensure t)
-
-(use-package treemacs-magit
-  :after (treemacs magit)
-  :ensure t)
-
-(use-package lsp-treemacs
-  :after (treemacs lsp-mode)
-  :ensure t
-  )
-#+end_src
-
-
 * Search Completion
 ** Ivy mode
 #+begin_src emacs-lisp
@@ -284,7 +202,6 @@ This mode does NOT work with LSP mode
   :defer 1
   :after counsel)
 #+end_src
-
 
 * Folder management
 #+begin_src  emacs-lisp
@@ -339,7 +256,6 @@ at the top level of DIRECTORY."
   (evil-mode 1)
   )
 #+END_SRC
-
 
 * Org
 ** Change bullet style
@@ -494,7 +410,6 @@ at the top level of DIRECTORY."
   (evil-collection-init)
   )
 #+end_src
-
 
 * Programming
 ** Dap
@@ -844,4 +759,3 @@ npm install -g prettier
 ;; turn off for better performance
 (setq lsp-enable-symbol-highlighting nil)
 #+end_src
-
