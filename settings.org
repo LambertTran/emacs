@@ -23,6 +23,9 @@
 
 ;; disable tabbing
 (setq-default indent-tabs-mode nil)
+
+;; set warning to Error
+(setq warning-minimum-level :emergency)
 #+END_SRC
 
 
