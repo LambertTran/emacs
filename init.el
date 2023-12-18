@@ -10,7 +10,6 @@
                               (time-subtract after-init-time before-init-time)))
                      gcs-done)))
 
-(require 'package)
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
                          ("melpa-stable" . "https://stable.melpa.org/packages/")
                          ("org" . "https://orgmode.org/elpa/")
@@ -37,17 +36,3 @@
 (org-babel-load-file
   (expand-file-name "settings.org"
                     user-emacs-directory))
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(rainbow-delimiters all-the-icons ws-butler web-mode super-save moe-theme lsp-ui exec-path-from-shell doom-modeline company)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(org-block ((t (:extend t)))))

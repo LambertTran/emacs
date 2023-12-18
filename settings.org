@@ -1,165 +1,112 @@
-* Turn off menu bar
+* Performance
 #+BEGIN_SRC emacs-lisp
-(setq evil-want-keybinding 'nil)
-;; menu is not available in Mac
-;; (menu-bar-mode -1)
-(tool-bar-mode -1)
-(tooltip-mode -1)
-;;(global-display-line-numbers-mode 1)
-(add-hook 'prog-mode-hook 'display-line-numbers-mode)
-(column-number-mode t)
-(global-auto-revert-mode t)
-(toggle-scroll-bar -1)
-(global-visual-line-mode 1)
-(electric-pair-mode 1)
-(setq electric-pair-preserve-balance nil)
-(setq ring-bell-function 'ignore)
+  (setq native-comp-speed 3) ;; maximum native Elisp speed!
+#+END_SRC
 
+* Evil mode
+#+BEGIN_SRC emacs-lisp
+  (setq evil-want-C-i-jump nil)
+
+  (use-package evil
+    :ensure t
+    :config
+    ;; Make tab work with org-mode
+    (evil-mode 1)
+    )
+#+END_SRC
+
+* Org
+** Change bullet style
+#+BEGIN_SRC emacs-lisp
+  (use-package org-bullets
+    :ensure t
+    :hook (org-mode . org-bullets-mode)
+    :custom
+    (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+
+#+END_SRC
+
+** Column to middle of page
+#+BEGIN_SRC emacs-lisp
+  (defun org-mode-visual-fill ()
+    (setq visual-fill-column-width 100
+          visual-fill-column-center-text t)
+    (visual-fill-column-mode 1))
+
+  (use-package visual-fill-column
+    :ensure t
+    :hook (org-mode . org-mode-visual-fill))
+#+END_SRC
+
+** Utilities
+#+BEGIN_SRC emacs-lisp
+;; insert src org
+(global-set-key (kbd "C-c a") 'org-agenda-list)
+(global-set-key (kbd "C-c s") 'org-insert-structure-template)
+(evil-define-key 'normal org-mode-map (kbd "<tab>") #'org-cycle)
+(set-face-foreground 'org-block-begin-line "#4e4e4e")
+(set-face-background 'org-block-begin-line "#3a3a3a")
+
+;; extend block code
+(custom-set-faces
+ '(org-block ((t (:extend t)))))
+
+;; set block code indentation
+(setq org-src-preserve-indentation nil
+      org-edit-src-content-indentation 0
+      org-startup-truncated nil
+      org-src-tab-acts-natively t
+      org-startup-indented t)
+
+;; disable image size
+(setq org-image-actual-width nil)
+#+END_SRC
+
+* Git
+#+begin_src emacs-lisp
+(use-package magit
+  :ensure t
+  :custom
+         ;; open magit status in same buffer
+         (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
+  :config
+         (global-set-key (kbd "C-x g") 'magit-status)
+  )
+
+
+;; open file in git
+(use-package git-link
+  :ensure t
+  :config
+         (setq git-link-open-in-browser t)
+  )
+
+(global-set-key (kbd "C-c l") 'git-link)
+#+end_src
+
+* Keybinding
+#+BEGIN_SRC emacs-lisp
 ;; ECS cancels all
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
-;; 
+;;
 (global-set-key (kbd "C-x k") 'kill-this-buffer)
 
-;; disable tabbing
-(setq-default indent-tabs-mode nil)
-
-;; set warning to Error
-(setq warning-minimum-level :emergency)
-#+END_SRC
-
-
-
-* Utilities
-** Force emacs to use PATH
-#+begin_src emacs-lisp
-(use-package exec-path-from-shell
-  :ensure t
-  :config
-  (exec-path-from-shell-initialize))
-
-#+end_src
-
-** shell-command
-#+begin_src emacs-lisp
 (defun ls ()
   "Lists the contents of the current directory."
   (interactive)
   (shell-command "open -a iterm ."))
 
 (global-set-key (kbd "C-x t") 'ls);
-#+end_src
 
-** Super auto save
-#+begin_src emacs-lisp
-(use-package super-save
-  :ensure t
-  :config
-  (super-save-mode +1))
-#+end_src
-
-** Trim white space
-#+begin_src emacs-lisp
-(use-package ws-butler
-  :ensure t
-  ;; enable for all programing modes
-  :hook (prog-mode . ws-butler-mode)
-  )
-#+end_src
-
-** Clipboard
-#+begin_src emacs-lisp
-(defun pbcopy ()
-  (interactive)
-  (call-process-region (point) (mark) "pbcopy")
-  (setq deactivate-mark t))
-
-(defun pbpaste ()
-  (interactive)
-  (call-process-region (point) (if mark-active (mark) (point)) "pbpaste" t t))
-
-(defun pbcut ()
-  (interactive)
-  (pbcopy)
-  (delete-region (region-beginning) (region-end)))
-
-(global-set-key (kbd "C-c c") 'pbcopy)
-(global-set-key (kbd "C-c v") 'pbpaste)
-(global-set-key (kbd "C-c x") 'pbcut)
-#+end_src
-
-** Option key as Meta key
-#+begin_src emacs-lisp
+;; MacOS option key as meta
 (setq mac-option-modifier 'meta)
-#+end_src
 
-** Backup
-#+begin_src emacs-lisp
-; Backup
-(setq create-lockfiles nil)
-(setq backup-directory-alist `(("." . "~/.saves")))
-(setq auto-save-file-name-transforms `((".*" ,"~/.saves" t)))
-#+end_src
-
-* UI
-** Theme
-#+BEGIN_SRC emacs-lisp
-(set-frame-font "Monaco 17" nil t)
-
-;; use with doom-mode-line
-;; https://github.com/doomemacs/themes
-(use-package doom-themes
-  :ensure t
-  :config
-  ;; Global settings (defaults)
-  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
-        doom-themes-enable-italic t) ; if nil, italics is universally disabled
-  (load-theme 'doom-one t)
-
-  ;; Enable flashing mode-line on errors
-  (doom-themes-visual-bell-config)
-  ;; Enable custom neotree theme (all-the-icons must be installed!)
-  (doom-themes-neotree-config)
-  ;; or for treemacs users
-  (setq doom-themes-treemacs-theme "doom-atom") ; use "doom-colors" for less minimal icon theme
-  (doom-themes-treemacs-config)
-  ;; Corrects (and improves) org-mode's native fontification.
-  (doom-themes-org-config))
-
-(custom-set-faces
-  `(font-lock-keyword-face ((t (:foreground ,(doom-color 'green '257)))))
-  `(font-lock-variable-name-face ((t (:foreground ,(doom-color 'blue '1000)))))
-  )
-
+;; find definity
+(global-set-key (kbd "M-g j") 'xref-find-definitions)
+;; go back
+(global-set-key (kbd "M-g b") 'xref-pop-marker-stack)
 #+END_SRC
-
-** Mode line
-#+begin_src  emacs-lisp
-;; https://github.com/seagle0128/doom-modeline#install
-;; use with nerd-icons
-(use-package doom-modeline
-  :ensure t
-  :init (doom-modeline-mode 1))
-
-;; https://github.com/rainstormstudio/nerd-icons.el#installing-fonts
-(use-package nerd-icons
-  :ensure t
-  )
-#+end_src
-
-
-*** Manual step
-#+begin_src bash
-Run M-x nerd-icons-install-fonts
-#+end_src
-
-** Rainbow Delimiters
-#+begin_src emacs-lisp
-(use-package rainbow-delimiters
-  :ensure t
-  :hook (prog-mode . rainbow-delimiters-mode)
-  )
-#+end_src
 
 * Search Completion
 ** Ivy mode
@@ -209,6 +156,7 @@ Run M-x nerd-icons-install-fonts
   :after counsel)
 #+end_src
 
+
 * Folder management
 #+begin_src  emacs-lisp
 (use-package projectile
@@ -250,518 +198,238 @@ at the top level of DIRECTORY."
      subdirs)))
 #+end_src
 
-
-* Evil mode
+* UI
+** Theme
 #+BEGIN_SRC emacs-lisp
-(setq evil-want-C-i-jump nil)
+  (tool-bar-mode -1)
+  (tooltip-mode -1)
+  ;;(global-display-line-numbers-mode 1)
+  (add-hook 'prog-mode-hook 'display-line-numbers-mode)
+  (column-number-mode t)
+  (global-auto-revert-mode t)
+  (toggle-scroll-bar -1)
+  (global-visual-line-mode 1)
+  (electric-pair-mode 1)
+  (setq electric-pair-preserve-balance nil)
+  (setq ring-bell-function 'ignore)
+  ;; disable tabbing
+  (setq-default indent-tabs-mode nil)
 
-(use-package evil
-  :ensure t
-  :config
-  ;; Make tab work with org-mode
-  (evil-mode 1)
-  )
+  ;; set warning to Error
+  (setq warning-minimum-level :emergency)
+
+  (set-frame-font "Monaco 17" nil t)
+
+  ;; use with doom-mode-line
+  ;; https://github.com/doomemacs/themes
+  (use-package doom-themes
+    :ensure t
+    :config
+    ;; Global settings (defaults)
+    (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+          doom-themes-enable-italic t) ; if nil, italics is universally disabled
+    (load-theme 'doom-one t)
+
+    ;; Enable flashing mode-line on errors
+    (doom-themes-visual-bell-config)
+    ;; Enable custom neotree theme (all-the-icons must be installed!)
+    (doom-themes-neotree-config)
+    ;; or for treemacs users
+    (setq doom-themes-treemacs-theme "doom-atom") ; use "doom-colors" for less minimal icon theme
+    (doom-themes-treemacs-config)
+    ;; Corrects (and improves) org-mode's native fontification.
+    (doom-themes-org-config))
+
+  (custom-set-faces
+   `(font-lock-keyword-face ((t (:foreground ,(doom-color 'green '257)))))
+   `(font-lock-variable-name-face ((t (:foreground ,(doom-color 'blue '1000)))))
+   )
+
+
 #+END_SRC
 
-* Org
-** Change bullet style
-#+BEGIN_SRC emacs-lisp
-(use-package org-bullets
-  :ensure t
-  :hook (org-mode . org-bullets-mode)
-  :custom
-  (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+** Mode line
+#+begin_src  emacs-lisp
+  ;; https://github.com/seagle0128/doom-modeline#install
+  ;; use with nerd-icons
+  (use-package doom-modeline
+    :ensure t
+    :init (doom-modeline-mode 1))
 
+  ;; https://github.com/rainstormstudio/nerd-icons.el#installing-fonts
+  (use-package nerd-icons
+    :ensure t)
+#+end_src
+
+** Manual step
+#+begin_src bash
+  Run M-x nerd-icons-install-fonts
+#+end_src
+
+** Rainbow Delimiters
+#+begin_src emacs-lisp
+  (use-package rainbow-delimiters
+    :ensure t
+    :hook (prog-mode . rainbow-delimiters-mode)
+    )
+#+end_src
+
+* Utilities
+** Force emacs to use PATH
+#+begin_src emacs-lisp
+  (use-package exec-path-from-shell
+    :ensure t
+    :config
+    (exec-path-from-shell-initialize))
+
+#+end_src
+
+** Super auto save
+#+begin_src emacs-lisp
+  (use-package super-save
+    :ensure t
+    :config
+    (super-save-mode +1))
+#+end_src
+
+** Trim white space
+#+begin_src emacs-lisp
+  (use-package ws-butler
+    :ensure t
+    :config
+    (ws-butler-global-mode)
+    )
+#+end_src
+
+** Backup
+#+begin_src emacs-lisp
+  (setq create-lockfiles nil)
+  (setq backup-directory-alist `(("." . "~/.saves")))
+  (setq auto-save-file-name-transforms `((".*" ,"~/.saves" t)))
+#+end_src
+
+* Completion
+#+BEGIN_SRC emacs-lisp
+  (use-package corfu
+    ;; Optional customizations
+    ;; :custom
+    ;; (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
+    ;; (corfu-auto t)                 ;; Enable auto completion
+    ;; (corfu-separator ?\s)          ;; Orderless field separator
+    ;; (corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
+    ;; (corfu-quit-no-match nil)      ;; Never quit, even if there is no match
+    ;; (corfu-preview-current nil)    ;; Disable current candidate preview
+    ;; (corfu-preselect 'prompt)      ;; Preselect the prompt
+    ;; (corfu-on-exact-match nil)     ;; Configure handling of exact matches
+    ;; (corfu-scroll-margin 5)        ;; Use scroll margin
+
+    ;; Enable Corfu only for certain modes.
+    ;; :hook ((prog-mode . corfu-mode)
+    ;;        (shell-mode . corfu-mode)
+    ;;        (eshell-mode . corfu-mode))
+
+    ;; Recommended: Enable Corfu globally.  This is recommended since Dabbrev can
+    ;; be used globally (M-/).  See also the customization variable
+    ;; `global-corfu-modes' to exclude certain modes.
+    :init
+    :ensure t
+    :config
+    (global-corfu-mode))
+
+  ;; A few more useful configurations...
+  (use-package emacs
+    :init
+    :ensure t
+    :config
+    ;; TAB cycle if there are only few candidates
+    (setq completion-cycle-threshold 3)
+
+    ;; Emacs 28: Hide commands in M-x which do not apply to the current mode.
+    ;; Corfu commands are hidden, since they are not supposed to be used via M-x.
+    ;; (setq read-extended-command-predicate
+    ;;       #'command-completion-default-include-p)
+
+    ;; Enable indentation+completion using the TAB key.
+    ;; `completion-at-point' is often bound to M-TAB.
+    (setq tab-always-indent 'complete))
+  ;; Enable auto completion and configure quitting
+  (setq corfu-auto t
+        corfu-quit-no-match 'separator) ;; or t
 #+END_SRC
 
-** Column to middle of page
-#+BEGIN_SRC emacs-lisp
-(defun org-mode-visual-fill ()
-  (setq visual-fill-column-width 100
-        visual-fill-column-center-text t)
-  (visual-fill-column-mode 1))
+* Treesitter
+** Manual step
+Note: Eval this block of code to install all treesitter grammar language
+#+BEGIN_SRC 
+  ;; https://www.masteringemacs.org/article/how-to-get-started-tree-sitter
 
-(use-package visual-fill-column
-  :ensure t
-  :hook (org-mode . org-mode-visual-fill))
+  (setq treesit-language-source-alist
+	'((bash "https://github.com/tree-sitter/tree-sitter-bash")
+	  (css "https://github.com/tree-sitter/tree-sitter-css")
+	  (elisp "https://github.com/Wilfred/tree-sitter-elisp")
+	  (go "https://github.com/tree-sitter/tree-sitter-go")
+      (gomode "https://github.com/camdencheek/tree-sitter-go-mod")
+	  (html "https://github.com/tree-sitter/tree-sitter-html")
+	  (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
+	  (json "https://github.com/tree-sitter/tree-sitter-json")
+	  (make "https://github.com/alemuller/tree-sitter-make")
+	  (markdown "https://github.com/ikatyang/tree-sitter-markdown")
+	  (python "https://github.com/tree-sitter/tree-sitter-python")
+	  (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
+	  (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
+	  (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
+
+  (mapc #'treesit-install-language-grammar (mapcar #'car treesit-language-source-alist))
+
 #+END_SRC
-
-** Utilities
-#+BEGIN_SRC emacs-lisp
-;; insert src org
-(global-set-key (kbd "C-c a") 'org-agenda-list)
-(global-set-key (kbd "C-c s") 'org-insert-structure-template)
-(evil-define-key 'normal org-mode-map (kbd "<tab>") #'org-cycle)
-(set-face-foreground 'org-block-begin-line "#4e4e4e")
-(set-face-background 'org-block-begin-line "#3a3a3a")
-
-;; extend block code
-(custom-set-faces
- '(org-block ((t (:extend t)))))
-
-;; set block code indentation
-(setq org-src-preserve-indentation nil
-      org-edit-src-content-indentation 0
-      org-startup-truncated nil
-      org-src-tab-acts-natively t
-      org-startup-indented t)
-
-;; disable image size
-(setq org-image-actual-width nil)
-#+END_SRC
-
-** Org Agenda
-#+begin_src emacs-lisp
-(setq org-agenda-files
-      '("~/org-agenda/todos.org"
-	    "~/org-agenda/habits.org"
-	    "~/org-agenda/journal.org"))
-(setq org-agenda-start-with-log-mode t)
-(setq org-log-done 'time)
-(setq org-log-into-drawer t)
-#+end_src
-
-** Org Capture Template
-#+begin_src emacs-lisp
-  (setq org-capture-templates
-    `(("t" "Tasks / Projects")
-      ("tt" "Task" entry (file+olp "~/org-agenda/todos.org" "Inbox")
-           "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
-
-      ("j" "Journal Entries")
-      ("jj" "Journal" entry
-           (file+olp+datetree "~/org-agenda/journal.org")
-           "\n* %<%I:%M %p> - Journal \n%?\n\n"
-           ;; ,(dw/read-file-as-string "~/Notes/Templates/Daily.org")
-           :empty-lines 1)
-       ))
-#+end_src
-
-** TODO Icons
-#+begin_src emacs-lisp
-(customize-set-value
-    'org-agenda-category-icon-alist
-    `(
-      ("agenda" "~/.emacs.d/icons/work.svg" nil nil :ascent center :mask heuristic)
-      ("habit" "~/.emacs.d/icons/chore.svg" nil nil :ascent center :mask heuristic)
-      ("events" "~/.emacs.d/icons/events.svg" nil nil :ascent center :mask heuristic)
-      ("inbox" "~/.emacs.d/icons/inbox.svg" nil nil :ascent center :mask heuristic)
-      ("walk" "~/.emacs.d/icons/walk.svg" nil nil :ascent center :mask heuristic)
-      ("solution" "~/.emacs.d/icons/solution.svg" nil nil :ascent center :mask heuristic)
-      ("community" "~/.emacs.d/icons/community.svg" nil nil :ascent center :mask heuristic)
-      ("idea" "~/.emacs.d/icons/idea.svg" nil nil :ascent center :mask heuristic)
-      ("man" "~/.emacs.d/icons/man.svg" nil nil :ascent center :mask heuristic)
-      ("scheduled" "~/.emacs.d/icons/scheduled.svg" nil nil :ascent center :mask heuristic)
-      ("class" "~/.emacs.d/icons/class.svg" nil nil :ascent center :mask heuristic)
-      ("plant" "~/.emacs.d/icons/plant.svg" nil nil :ascent center :mask heuristic)
-      ("check" "~/.emacs.d/icons/check.svg" nil nil :ascent center :mask heuristic)
-      ("search" "~/.emacs.d/icons/search.svg" nil nil :ascent center :mask heuristic)
-      ("home" "~/.emacs.d/icons/home.svg" nil nil :ascent center :mask heuristic)
-      ("book" "~/.emacs.d/icons/book.svg" nil nil :ascent center :mask heuristic)
-      ("cook" "~/.emacs.d/icons/cook.svg" nil nil :ascent center :mask heuristic)
-      ("buy" "~/.emacs.d/icons/buy.svg" nil nil :ascent center :mask heuristic)
-      ("shower" "~/.emacs.d/icons/shower.svg" nil nil :ascent center :mask heuristic)
-      ))
-#+end_src
-
-** Source block
-#+begin_src emacs-lisp
-(require 'org-tempo)
-(add-to-list 'org-structure-template-alist '("sh" . "src shell"))
-(add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
-(add-to-list 'org-structure-template-alist '("go" . "src go :results output"))
-#+end_src
-
-** Execute code
-#+begin_src emacs-lisp
-;;(require 'ob-go)
-;; (org-babel-do-load-languages
-;;  'org-babel-load-languages
-;;  '((go . t)))
-;; 
-;; babel will not ask for perm to execute code
-;; (setq org-confirm-babel-evaluate nil)
-#+end_src
-
-
-* Git
-** Magit
-#+begin_src emacs-lisp
-(use-package magit
-  :ensure t
-  :custom
-         ;; open magit status in same buffer
-         (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
-  :config
-         (global-set-key (kbd "C-x g") 'magit-status)
-  )
-
-
-;; open file in git
-(use-package git-link
-  :ensure t
-  :config
-         (setq git-link-open-in-browser t)
-  )
-
-(global-set-key (kbd "C-c l") 'git-link)
-#+end_src
-
-** Evil Integration
-#+begin_src emacs-lisp
-(use-package evil-collection
-  :ensure t
-  :after evil
-  :init
-  (evil-collection-init)
-  )
-#+end_src
-
-* Programming
-** Dap
-#+begin_src emacs-lisp
-(use-package dap-mode
-  :ensure t
-  :custom
-  ;; disable all dap frames
-  ;;(lsp-enable-dap-auto-configure nil)
-  (dap-auto-configure-features '(locals))
-  :config
-  (dap-ui-mode 1)
-  )
-#+end_src
-
-** Language server Protocol
-#+begin_src emacs-lisp
-(use-package lsp-mode
-  :ensure t
-  :defer t
-  :hook
-  (sh-mode . lsp)
-  (html-mode . lsp)
-
-  :bind (
-	 ("M-g j" . lsp-find-definition)
-	 ("M-g r" . lsp-ui-peek-find-references)
-	 ("M-g b" . xref-go-back)
-  ))
-
-(use-package lsp-ui
-  :ensure t
-  :hook (lsp-mode . lsp-ui-mode)
-  :custom
-    ;; this feature is disabled by default
-    (lsp-ui-doc-show-with-cursor t) 
-    (lsp-ui-doc-delay 0.0)
-  )
-
-;; Set up before-save hooks to format buffer and add/delete imports.
-;; Make sure you don't have other gofmt/goimports hooks enabled.
-(defun lsp-format-save-hook ()
-  (add-hook 'before-save-hook #'lsp-format-buffer t t)
-  (add-hook 'before-save-hook #'lsp-organize-imports t t)
-  )
-#+end_src
-
-** Auto Completion
-#+begin_comment
-M-x company-diag: show company backend
-#+end_comment
-
-#+begin_src emacs-lisp
-(use-package company
-  :ensure t
-  :after lsp-mode
-  :hook (prog-mode . company-mode)
-  :bind (:map company-active-map
-	      ("<tab>" . company-complete-selection))
-        (:map lsp-mode-map
-	      ("<tab>" . company-indent-or-complete-common))
-  :custom
-    ;; start autocompletion only after typing
-    (company-begin-commands '(self-insert-command)) 
-	;; decrease delay before autocompletion popup shows
-    (company-idle-delay 0.0)                         
-    (company-minimum-prefix-length 1)
-    ;; remove annoying blinking
-    (company-echo-delay 0)                          
-  )
-#+end_src
 
 ** Golang
-- source: https://github.com/mdempsky/gocode
-- need to install gopls
-
-#+begin_src bash
-go get -u github.com/mdempsky/gocode
-gocode close
-export GOPATH=$(go env GOPATH)
-# /Users/alirom/go
-
-export PATH=$(go env GOPATH)/bin:$PATH
-# /Users/alirom/go/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin/git:/Users/alirom/go/bin:/usr/local/go/bin:/Library/Apple/usr/bin
-#+end_src
-
-- need to install go-delv
-  #+begin_src bash
-  go install github.com/go-delve/delve/cmd/dlv@latest
-  #+end_src
-
-
-#+begin_src emacs-lisp
-(use-package go-mode
-  :ensure t
-  :defer t
-  :config
-  (setq lsp-go-analyses
-        '((fieldalignment . t)
-          (unusedwrite . t)
-          (unusedparams . t)
-          (nilness . t)))
-  )
-
-(add-hook 'go-mode-hook #'lsp-deferred)
-
-(use-package company-go
-   :ensure t
-   :defer t
-   :hook (go-mode . company-mode)
-  )
-
-(add-hook 'go-mode-hook #'lsp-format-save-hook)
-
-(require 'dap-dlv-go)
-
-
-;; Set tab width
-(add-hook 'go-mode-hook (lambda()
-        (setq tab-width 4)
-))
-
-;; https://github.com/golang/tools/blob/master/gopls/doc/analyzers.md
-(setq lsp-go-analyses '((shadow . t)
-                        (simplifycompositelit . :json-false)))
-
-
-;; (use-package eglot
-;;   :ensure t
-;;   )
-;; (add-hook 'go-mode-hook 'eglot-ensure)
-#+end_src
-
-** Python
-- http://tkf.github.io/emacs-jedi/latest/
-
-#+begin_src emacs-lisp
-(use-package python
-  :ensure t
-  :config
-  ;; Remove guess indent python message
-  (setq python-indent-guess-indent-offset-verbose nil)
-  ;; Use IPython when available or fall back to regular Python
-  (cond
-   ((executable-find "ipython")
-    (progn
-      (setq python-shell-buffer-name "IPython")
-      (setq python-shell-interpreter "ipython")
-      (setq python-shell-interpreter-args "-i --simple-prompt")))
-   ((executable-find "python3")
-    (setq python-shell-interpreter "python3"))
-   ((executable-find "python2")
-    (setq python-shell-interpreter "python2"))
-   (t
-    (setq python-shell-interpreter "python"))))
-
-(use-package lsp-pyright
-  :ensure t
-  :defer t
-  :config
-  (setq lsp-clients-python-library-directories '("/usr/" "~/miniconda3/pkgs"))
-  (setq lsp-pyright-disable-language-service nil
-        lsp-pyright-disable-organize-imports nil
-        lsp-pyright-auto-import-completions t
-        lsp-pyright-use-library-code-for-types t)
-  :hook ((python-mode . (lambda ()
-                          (require 'lsp-pyright) (lsp-deferred)))))
-
-
-(add-hook 'python-mode #'lsp-deferred)
-#+end_src
-
-** Compiling
-#+begin_src emacs-lisp
-(global-set-key (kbd "C-c p") 'project-compile)
-(global-set-key (kbd "C-c k") 'kill-compilation)
-(add-hook 'compilation-filter-hook #'ansi-color-compilation-filter)
-(setq compilation-scroll-output t)
-#+end_src
-
-** Terraform
-#+begin_src 
-- clone
-git clone https://github.com/juliosueiras/terraform-lsp.git
-- and build
-#+end_src
-
-#+begin_src emacs-lisp
-(use-package terraform-mode
-  :ensure t
-  )
-
-(add-hook 'terraform-mode-hook #'lsp-deferred)
-(add-hook 'terraform-mode-hook #'lsp-format-save-hook)
-
-(use-package company-terraform
-  :ensure t
-  )
-
-(company-terraform-init)
-
-(setq lsp-disabled-clients '(tfls))
-(setq lsp-semantic-tokens-enable t)
-(setq lsp-semantic-tokens-honor-refresh-requests t)
-(setq lsp-enable-links t)
-(setq lsp-terraform-ls-prefill-required-fields t)
-
-
-;; (with-eval-after-load 'lsp-mode
-;; (add-to-list 'lsp-language-id-configuration '(terraform-mode . "terraform"))
-;; (lsp-register-client
-;;  ;; terraform-lsp is installed via go 
-;;  (make-lsp-client :new-connection (lsp-stdio-connection '("/Users/alirom/go/bin/terraform-lsp" "-enable-log-file"))
-;;                   :major-modes '(terraform-mode)
-;;                   :server-id 'terraform-ls))
-;;   )
-
-#+end_src
+#+BEGIN_SRC emacs-lisp
+  (use-package go-ts-mode
+    :ensure t
+    :mode "\\.go\\'"
+    :hook ((go-ts-mode . eglot-ensure)
+           (go-ts-mode . corfu-mode)))
+#+END_SRC
 
 ** Yaml
-Note: Need to install yaml-lsp manually
-M-x lsp-install-server RET yamlls RET
-#+begin_src emacs-lisp
-(use-package yaml-mode
+#+BEGIN_SRC emacs-lisp
+(use-package yaml-ts-mode
   :ensure t
-  :mode "\\.ya?ml\\'")
+  :mode ("\\.yaml\\'" "\\.yml\\'")
+  :hook ((yaml-ts-mode . eglot-ensure)
+         (yaml-ts-mode . corfu-mode)))
+#+END_SRC
 
-(add-hook 'yaml-mode-hook #'lsp-deferred)
-#+end_src
-
-** Rego
+** Javascript
 #+begin_src emacs-lisp
-(use-package rego-mode
+(use-package js-ts-mode
   :ensure t
-  :mode "\\.rego\\'")
-; LSP-mode hasnt supported REGO yet
-;(add-hook 'rego-mode-hook #'lsp-deferred)
-#+end_src
-
-** Dockerfile
-#+begin_src emacs-lisp
-(use-package dockerfile-mode
-  :ensure t
-  :config
-  :mode "Dockerfile\\'"
-  )
-
-;; need to manually install dockerfile lsp
-;; M-x lsp-install-server RET dockerfile-ls
-(add-hook 'dockerfile-mode-hook #'lsp-deferred)
-#+end_src
-
-#+begin_src emacs-lisp
-; (use-package graphql-mode
-;   :ensure t
-;   )
-; (add-hook 'graphql-mode-hook #'lsp-deferred)
-#+end_src
-
-** Complete double quotes
-This mode does NOT work with LSP mode
-#+begin_src emacs-lisp
-;; (org-babel-load-file
-;;  (expand-file-name "custom-modes/autopair.el"
-;;                    user-emacs-directory))
-;; (require 'autopair)
-;; (autopair-global-mode) ;; enable autopair in all buffers
-#+end_src
-
-** Snippet
-#+begin_src emacs-lisp
-(use-package yasnippet
-  :ensure t
-  :config
-  (setq yas-snippet-dirs '("~/.emacs.d/snippets"))
-  (yas-global-mode 1)
-  (define-key yas-minor-mode-map (kbd "<tab>") nil)
-  (define-key yas-minor-mode-map (kbd "TAB") nil)
-  (define-key yas-minor-mode-map (kbd "<C-tab>") 'yas-expand)
+  :mode "\\.js\\'"
+  :hook((js-ts-mode . eglot-ensure)
+        (js-ts-mode . corfu-mode))
   )
 #+end_src
 
-** Javascript/Typescript
-- install 
-#+begin_src 
-M-x -> lsp-install-server> ts-ls
-npm install -g prettier
-#+end_src
-
+** Typescript
 #+begin_src emacs-lisp
-(use-package web-mode
+(use-package typescript-ts-mode
   :ensure t
-  :mode (("\\.js\\'" . web-mode)
-	 ("\\.jsx\\'" .  web-mode)
-	 ("\\.ts\\'" . web-mode)
-	 ("\\.tsx\\'" . web-mode)
-	 ("\\.html\\'" . web-mode))
-  :commands web-mode
-  :custom
-  (web-mode-script-padding 0) ; For vue.js SFC : no initial padding in the script section
-  (web-mode-markup-indent-offset 2) ; For html : use an indent of size 2 (default is 4)
-  (web-mode-css-indent-offset 2)
-  (web-mode-code-indent-offset 2)
-  )
-
-(add-hook 'web-mode-hook #'lsp-deferred)
-
-(use-package prettier-js
-  :ensure t
-  :custom
-  (prettier-js-show-errors nil)
-  (prettier-js-args '("--semi" "true"
-                      "--single-quote" "true"
-                      "--tab-width" "2"
-                      "--trailing-comma" "all"
-                      "--print-width" "80")))
-(add-hook 'web-mode-hook 'prettier-js-mode)
-#+end_src
-
-
-
-#+begin_src emacs-lisp
-(use-package protobuf-mode
-  :ensure t
-  :mode (
-         ("\\.proto\\'" . protobuf-mode)
-         )
+  :mode "\\.ts\\'"
+  :hook((typescript-ts-mode . eglot-ensure)
+        (typescript-ts-mode . corfu-mode))
   )
 #+end_src
 
-* Performance
+** Remap major autoloaded mode
 #+begin_src emacs-lisp
-(delete-selection-mode t)
-(setq gc-cons-threshold 600000000) ; ie 100mb, default is 800kb
-(setq read-process-output-max (* 4096 1024))
-(setq lsp-prefer-capf t)
-(setq lsp-idle-delay 0.500)
-(setq lsp-print-performance t)
-(setq auto-save-default nil)
-(setq make-backup-files nil)
-(setq create-lockfiles nil)
-(setq lsp-log-io nil) ;; Don't log everything = speed
-(setq lsp-restart 'auto-restart)
-(setq lsp-enable-on-type-formatting nil)
-(setq lsp-signature-auto-activate nil)
+(add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
+(add-to-list 'major-mode-remap-alist '(js-mode . js-ts-mode))
+#+end_src
 
-;; turn off for better performance
-(setq lsp-enable-symbol-highlighting nil)
+* Eglot
+#+begin_src emacs-lisp
+(use-package eglot
+  :ensure t
+  :defer t)
 #+end_src
