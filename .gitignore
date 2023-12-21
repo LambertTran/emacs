@@ -6,3 +6,4 @@ transient
 auto-save-list
 **cache**
 .lsp*
+tree-sitter**
