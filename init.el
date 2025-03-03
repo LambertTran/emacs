@@ -36,13 +36,6 @@
 (org-babel-load-file
   (expand-file-name "settings.org"
                     user-emacs-directory))
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(js-ts-mode corfu yasnippet yaml-mode ws-butler web-mode visual-fill-column super-save smex rego-mode rainbow-delimiters protobuf-mode prettier-js org-bullets moe-theme magit lsp-ui lsp-pyright git-link exec-path-from-shell evil-collection doom-themes doom-modeline dockerfile-mode dap-mode counsel-projectile company-terraform company-go all-the-icons)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -51,3 +44,9 @@
  '(font-lock-keyword-face ((t (:foreground "#98be65"))))
  '(font-lock-variable-name-face ((t (:foreground "#51afef"))))
  '(org-block ((t (:extend t)))))
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages nil))
