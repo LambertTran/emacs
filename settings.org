@@ -482,7 +482,7 @@ Note: Eval this block of code to install all treesitter grammar language
 #+begin_src emacs-lisp
 (use-package terraform-ts-mode
   :ensure t
-  :mode "\\.hcl\\'"
+  :mode "\\.tf\\'"
   :hook((terraform-ts-mode . eglot-ensure)
         (terraform-ts-mode . corfu-mode))
   )
