@@ -17,7 +17,14 @@
 ;; set warning to Error
 (setq warning-minimum-level :emergency)
 
-(set-frame-font "Monaco 17" nil t)
+;; Register the font in default-frame-alist so every future frame (GUI or
+;; emacsclient) picks it up, even when this file runs headless during
+;; `emacs --daemon` startup -- set-frame-font alone doesn't persist to
+;; frames created later in that case, since no graphical frame exists yet
+;; for it to apply to or register from.
+(add-to-list 'default-frame-alist '(font . "Monaco-17"))
+(when (display-graphic-p)
+  (set-frame-font "Monaco 17" nil t))
 
 ;; use with doom-mode-line
 ;; https://github.com/doomemacs/themes
@@ -47,16 +54,21 @@
   :ensure t
   :hook (prog-mode . rainbow-delimiters-mode))
 
+;; https://github.com/rainstormstudio/nerd-icons.el#installing-fonts
+(use-package nerd-icons
+  :ensure t
+  :config
+  ;; Auto-install the Nerd Font glyphs on first run; skip once present so
+  ;; startup doesn't hit the network (or re-download) every time.
+  (let ((font-file (expand-file-name "Library/Fonts/NFM.ttf" (getenv "HOME"))))
+    (unless (file-exists-p font-file)
+      (nerd-icons-install-fonts t))))
+
 ;; https://github.com/seagle0128/doom-modeline#install
 ;; use with nerd-icons
 (use-package doom-modeline
   :ensure t
   :init (doom-modeline-mode 1))
-
-;; https://github.com/rainstormstudio/nerd-icons.el#installing-fonts
-;; Manual step (run once): M-x nerd-icons-install-fonts
-(use-package nerd-icons
-  :ensure t)
 
 (provide 'fe-ui)
 ;;; fe-ui.el ends here

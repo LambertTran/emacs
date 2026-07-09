@@ -24,5 +24,10 @@
   :config
   (ws-butler-global-mode))
 
+(use-package server
+  :config
+  (unless (server-running-p)
+    (server-start)))
+
 (provide 'fe-core)
 ;;; fe-core.el ends here

@@ -1,12 +1,14 @@
 ;;; fe-grammar.el --- Tree-sitter grammar setup  -*- lexical-binding: t -*-
 ;;; Code:
 
+(require 'treesit)
+
 (setq treesit-language-source-alist
       '((bash "https://github.com/tree-sitter/tree-sitter-bash")
         (css "https://github.com/tree-sitter/tree-sitter-css")
         (elisp "https://github.com/Wilfred/tree-sitter-elisp")
         (go "https://github.com/tree-sitter/tree-sitter-go")
-        (gomode "https://github.com/camdencheek/tree-sitter-go-mod")
+        (gomod "https://github.com/camdencheek/tree-sitter-go-mod")
         (html "https://github.com/tree-sitter/tree-sitter-html")
         (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
         (json "https://github.com/tree-sitter/tree-sitter-json")
@@ -19,17 +21,20 @@
         (dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile")
         (jsonnet "https://github.com/sourcegraph/tree-sitter-jsonnet")
         (comment "https://github.com/stsewd/tree-sitter-comment")
-        (sql "https://github.com/DerekStride/tree-sitter-sql")
         (org "https://github.com/milisims/tree-sitter-org")
         (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
 
 (defun fe-treesit-install-all-grammars ()
-  "Install every tree-sitter grammar listed in `treesit-language-source-alist'.
-Run this manually (M-x fe-treesit-install-all-grammars) after adding a
-new language, rather than on every startup."
+  "Install every grammar in `treesit-language-source-alist' that isn't
+already installed. Runs automatically on startup (skipping languages
+already installed); call interactively (M-x) to retry after adding a
+new language."
   (interactive)
-  (mapc #'treesit-install-language-grammar
-        (mapcar #'car treesit-language-source-alist)))
+  (dolist (lang (mapcar #'car treesit-language-source-alist))
+    (unless (treesit-ready-p lang t)
+      (treesit-install-language-grammar lang))))
+
+(fe-treesit-install-all-grammars)
 
 (setq major-mode-remap-alist
       '((yaml-mode . yaml-ts-mode)

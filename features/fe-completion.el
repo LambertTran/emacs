@@ -23,7 +23,12 @@
 
 ;; Enable auto completion and configure quitting
 (setq corfu-auto t
+      corfu-auto-delay 0.3        ; default 0.2; slightly less eager to query capf
       corfu-quit-no-match 'separator) ;; or t
+
+;; Eldoc (hover/signature help) polls the backend (eglot) on point movement;
+;; give it a bit more breathing room so it doesn't fire on every pause.
+(setq eldoc-idle-delay 0.75)
 
 (use-package eglot
   :defer t
@@ -37,7 +42,10 @@
   ;; specific to any one language server, so it lives here instead.
   (fset #'jsonrpc--log-event #'ignore)
   (setq eglot-events-buffer-size 0)
-  (setq eglot-sync-connect nil))
+  (setq eglot-sync-connect nil)
+  ;; Batch more edits before sending didChange to the server, reducing
+  ;; round-trips while typing (default 0.5).
+  (setq eglot-send-changes-idle-time 0.7))
 
 (provide 'fe-completion)
 ;;; fe-completion.el ends here

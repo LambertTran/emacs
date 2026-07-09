@@ -1,6 +1,19 @@
 ;;; fe-golang.el --- Go support  -*- lexical-binding: t -*-
 ;;; Code:
 
+;; Ensure gopls (the language server eglot connects to) is installed and on
+;; Emacs's exec-path, so `go install`'s default $GOPATH/bin location works
+;; even before the shell's own PATH picks it up.
+(let ((gopls-dir (expand-file-name "go/bin" (getenv "HOME"))))
+  (add-to-list 'exec-path gopls-dir)
+  (unless (executable-find "gopls")
+    (when (executable-find "go")
+      (message "Installing gopls...")
+      (if (zerop (call-process "go" nil "*gopls-install*" nil
+                                "install" "golang.org/x/tools/gopls@latest"))
+          (message "gopls installed successfully.")
+        (message "gopls install failed; see *gopls-install* buffer.")))))
+
 (use-package go-ts-mode
   :mode "\\.go\\'"
   :hook (go-ts-mode . eglot-ensure))
