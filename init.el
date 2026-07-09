@@ -33,9 +33,13 @@
   (setq org-ellipsis " ▾")
   (setq org-hide-emphasis-markers t))
 
-(org-babel-load-file
-  (expand-file-name "settings.org"
-                    user-emacs-directory))
+(add-to-list 'load-path (expand-file-name "vendored" user-emacs-directory))
+(add-to-list 'load-path (expand-file-name "features" user-emacs-directory))
+
+(dolist (file (sort (file-expand-wildcards
+                     (expand-file-name "features/fe-*.el" user-emacs-directory))
+                    #'string<))
+  (load file nil t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
