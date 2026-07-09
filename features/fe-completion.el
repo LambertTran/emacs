@@ -27,8 +27,10 @@
       corfu-quit-no-match 'separator) ;; or t
 
 ;; Eldoc (hover/signature help) polls the backend (eglot) on point movement;
-;; give it a bit more breathing room so it doesn't fire on every pause.
-(setq eldoc-idle-delay 0.75)
+;; give it enough breathing room that normal reading/navigation pauses don't
+;; trigger it, since a still-indexing server (e.g. gopls on a fresh project)
+;; can be slow to answer and makes cursor movement itself feel laggy.
+(setq eldoc-idle-delay 1.5)
 
 (use-package eglot
   :defer t
