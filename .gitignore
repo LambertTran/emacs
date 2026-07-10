@@ -6,3 +6,5 @@ auto-save-list
 **cache**
 .lsp*
 tree-sitter**
+agent/
+.agent-shell/
