@@ -16,8 +16,17 @@
                          ("elpa" . "https://elpa.gnu.org/packages/")))
 (package-initialize)
 
-(when (not package-archive-contents)
-    (package-refresh-contents))
+;; Refresh the package index on first run, and periodically afterward --
+;; without this, a stale cached index can reference package versions that
+;; have since been pruned from the archive, breaking new installs.
+(let ((archive-file (expand-file-name "archives/melpa/archive-contents" package-user-dir)))
+  (when (or (not package-archive-contents)
+            (not (file-exists-p archive-file))
+            (> (float-time
+                (time-since
+                 (file-attribute-modification-time (file-attributes archive-file))))
+               (* 7 24 60 60)))
+    (package-refresh-contents)))
 
 (dolist (package '(use-package))
    (unless (package-installed-p package)
