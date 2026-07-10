@@ -3,21 +3,22 @@ HOME_EMACS_D := $(HOME)/.emacs.d
 ZPROFILE := $(HOME)/.zprofile
 BASH_ALIASES := $(HOME)/.bash_aliases
 
-.PHONY: help setup symlink path-gopls alias-e
+.PHONY: help setup symlink path-gopls alias-e agent-shell-deps
 
 help:
 	@echo "Manual one-time setup steps for this config (idempotent, safe to re-run):"
-	@echo "  make setup       - run all steps below"
-	@echo "  make symlink     - symlink ~/.emacs.d to this repo"
-	@echo "  make path-gopls  - add \$$HOME/go/bin to PATH in ~/.zprofile (for gopls)"
-	@echo "  make alias-e     - add an emacsclient-based 'e' shell function to ~/.bash_aliases"
+	@echo "  make setup            - run all steps below"
+	@echo "  make symlink          - symlink ~/.emacs.d to this repo"
+	@echo "  make path-gopls       - add \$$HOME/go/bin to PATH in ~/.zprofile (for gopls)"
+	@echo "  make alias-e          - add an emacsclient-based 'e' shell function to ~/.bash_aliases"
+	@echo "  make agent-shell-deps - npm install -g the claude-agent-acp bridge (for agent-shell)"
 	@echo ""
 	@echo "Not needed here (already automatic once Emacs starts against this config):"
 	@echo "  - nerd-icons font install (features/fe-ui.el)"
 	@echo "  - tree-sitter grammar install (features/fe-grammar.el)"
 	@echo "  - gopls install itself (features/fe-golang.el)"
 
-setup: symlink path-gopls alias-e
+setup: symlink path-gopls alias-e agent-shell-deps
 
 symlink:
 	@if [ -L "$(HOME_EMACS_D)" ] && [ "$$(readlink "$(HOME_EMACS_D)")" = "$(EMACS_DIR)" ]; then \
@@ -45,4 +46,14 @@ alias-e:
 	else \
 		printf '\ne() {\n    emacsclient -c -n -a "" "$$@"\n}\n' >> "$(BASH_ALIASES)"; \
 		echo "Added e() function to ~/.bash_aliases"; \
+	fi
+
+agent-shell-deps:
+	@if command -v claude-agent-acp >/dev/null 2>&1; then \
+		echo "claude-agent-acp already installed"; \
+	elif command -v npm >/dev/null 2>&1; then \
+		npm install -g @agentclientprotocol/claude-agent-acp; \
+	else \
+		echo "npm not found; install Node.js first, then re-run 'make agent-shell-deps'"; \
+		exit 1; \
 	fi
