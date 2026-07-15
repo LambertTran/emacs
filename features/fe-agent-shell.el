@@ -16,7 +16,9 @@
   :config
   ;; Login-based auth: run `claude` outside Emacs at least once to log in.
   (setq agent-shell-anthropic-authentication
-        (agent-shell-anthropic-make-authentication :login t)))
+        (agent-shell-anthropic-make-authentication :login t))
+  ;; Default new sessions to Claude Code's "Auto" permission mode.
+  (setq agent-shell-anthropic-default-session-mode-id "auto"))
 
 (provide 'fe-agent-shell)
 ;;; fe-agent-shell.el ends here
