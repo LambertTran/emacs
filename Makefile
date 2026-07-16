@@ -44,7 +44,7 @@ alias-e:
 	@if [ -f "$(BASH_ALIASES)" ] && grep -q 'emacsclient -c -n -a ""' "$(BASH_ALIASES)"; then \
 		echo "~/.bash_aliases already has the emacsclient e() function"; \
 	else \
-		printf '\ne() {\n    emacsclient -c -n -a "" "$$@"\n}\n' >> "$(BASH_ALIASES)"; \
+		printf '\ne() {\n    emacsclient -c -n -a "" "$$@"\n    osascript -e '"'"'tell application "Emacs" to activate'"'"' >/dev/null 2>&1\n}\n' >> "$(BASH_ALIASES)"; \
 		echo "Added e() function to ~/.bash_aliases"; \
 	fi
 

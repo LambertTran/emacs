@@ -8,3 +8,5 @@ auto-save-list
 tree-sitter**
 agent/
 .agent-shell/
+projects*
+local/

@@ -53,6 +53,15 @@
                      (expand-file-name "features/fe-*.el" user-emacs-directory))
                     #'string<))
   (load file nil t))
+
+;; Machine-local configuration that shouldn't be committed to the repo
+;; (e.g. secrets, per-machine paths). Loaded last so it can override
+;; anything above.
+(let ((local-files (file-expand-wildcards
+                     (expand-file-name "local/*.el" user-emacs-directory))))
+  (dolist (file (sort local-files #'string<))
+    (load file nil t)))
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
