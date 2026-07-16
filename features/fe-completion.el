@@ -32,6 +32,16 @@
 ;; can be slow to answer and makes cursor movement itself feel laggy.
 (setq eldoc-idle-delay 1.5)
 
+;; Eglot already turns on flymake-mode (its diagnostics backend) in any
+;; buffer it manages, so this mainly covers non-eglot buffers, like
+;; emacs-lisp-mode, that ship their own flymake backend.
+(use-package flymake
+  :hook (prog-mode . flymake-mode)
+  :bind (:map flymake-mode-map
+              ("M-n" . flymake-goto-next-error)
+              ("M-p" . flymake-goto-prev-error)
+              ("C-c ! l" . flymake-show-buffer-diagnostics)))
+
 (use-package eglot
   :defer t
   :config
