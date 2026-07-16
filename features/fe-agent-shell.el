@@ -13,6 +13,7 @@
 
 (use-package agent-shell
   :ensure t
+  :bind ("C-c c" . agent-shell)
   :config
   ;; Login-based auth: run `claude` outside Emacs at least once to log in.
   (setq agent-shell-anthropic-authentication

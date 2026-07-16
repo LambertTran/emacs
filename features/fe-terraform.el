@@ -1,9 +1,10 @@
 ;;; fe-terraform.el --- Terraform support  -*- lexical-binding: t -*-
 ;;; Code:
 
-;; Vendored mode lives in vendored/terraform-ts-mode.el (see that file for
-;; the upstream source: https://github.com/kgrotel/terraform-ts-mode).
-(require 'terraform-ts-mode)
+;; terraform-ts-mode isn't on MELPA, so fetch it straight from upstream via
+;; package-vc instead of hand-vendoring a copy of the file in this repo.
+(use-package terraform-ts-mode
+  :vc (:url "https://github.com/kgrotel/terraform-ts-mode"))
 
 (provide 'fe-terraform)
 ;;; fe-terraform.el ends here

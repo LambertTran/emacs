@@ -50,8 +50,8 @@
   (setq eglot-autoshutdown t)
   ;; Disable eglot/jsonrpc event logging for performance. This used to be
   ;; toggled as a side effect of opening a Terraform file (see
-  ;; vendored/terraform-ts-mode.el); it's a global eglot/jsonrpc setting, not
-  ;; specific to any one language server, so it lives here instead.
+  ;; terraform-ts-mode.el); it's a global eglot/jsonrpc setting, not specific
+  ;; to any one language server, so it lives here instead.
   (fset #'jsonrpc--log-event #'ignore)
   (setq eglot-events-buffer-size 0)
   (setq eglot-sync-connect nil)

@@ -10,6 +10,11 @@
                               (time-subtract after-init-time before-init-time)))
                      gcs-done)))
 
+;; Required before `package-initialize' activates installed packages: some
+;; packages' autoloads (e.g. terraform-ts-mode's) call `treesit-ready-p' at
+;; top level, which is void until `treesit' itself has been required.
+(require 'treesit)
+
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
                          ("melpa-stable" . "https://stable.melpa.org/packages/")
                          ("org" . "https://orgmode.org/elpa/")
@@ -42,7 +47,6 @@
   (setq org-ellipsis " ▾")
   (setq org-hide-emphasis-markers t))
 
-(add-to-list 'load-path (expand-file-name "vendored" user-emacs-directory))
 (add-to-list 'load-path (expand-file-name "features" user-emacs-directory))
 
 (dolist (file (sort (file-expand-wildcards
