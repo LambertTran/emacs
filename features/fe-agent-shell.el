@@ -25,7 +25,26 @@
   ;; fresh session instead of prompting to resume/pick one.
   (setq agent-shell-session-strategy 'new)
   ;; Default `agent-shell' to Claude Code instead of prompting for an agent.
-  (setq agent-shell-preferred-agent-config 'claude-code))
+  (setq agent-shell-preferred-agent-config 'claude-code)
+  ;; Skip the ASCII art / greeting banner shown at session start.
+  (setq agent-shell-show-welcome-message nil)
+  ;; agent-shell has no public toggle for the bootstrapping info blocks
+  ;; ("Available /commands", "Agent capabilities", "Available config
+  ;; options", "Available models", "Available modes"). Drop them so a new
+  ;; shell buffer opens straight to the prompt instead of that report.
+  (advice-add 'agent-shell--update-fragment :around
+              (lambda (orig &rest args)
+                (unless (and (equal (plist-get args :namespace-id) "bootstrapping")
+                             (member (plist-get args :block-id)
+                                     '("available_commands_update"
+                                       "set-model"
+                                       "set-session-mode"
+                                       "agent_capabilities"
+                                       "available_config_options"
+                                       "available_models"
+                                       "available_modes"
+                                       "starting")))
+                  (apply orig args)))))
 
 (provide 'fe-agent-shell)
 ;;; fe-agent-shell.el ends here
