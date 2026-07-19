@@ -70,5 +70,16 @@
   :ensure t
   :init (doom-modeline-mode 1))
 
+;; https://github.com/rainstormstudio/nerd-icons-dired
+(use-package nerd-icons-dired
+  :ensure t
+  :hook (dired-mode . nerd-icons-dired-mode))
+
+;; https://github.com/roman/golden-ratio.el
+(use-package golden-ratio
+  :ensure t
+  :config
+  (golden-ratio-mode 1))
+
 (provide 'fe-ui)
 ;;; fe-ui.el ends here

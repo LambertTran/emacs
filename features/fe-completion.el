@@ -35,8 +35,16 @@
 ;; Eglot already turns on flymake-mode (its diagnostics backend) in any
 ;; buffer it manages, so this mainly covers non-eglot buffers, like
 ;; emacs-lisp-mode, that ship their own flymake backend.
+;;
+;; Only do this for file-visiting buffers: elisp-flymake-byte-compile
+;; refuses to run in buffers Emacs doesn't consider "trusted" (see
+;; `trusted-content'), and unsaved buffers like *scratch* can never be
+;; trusted since they have no backing file, so hooking prog-mode
+;; unconditionally just prints a warning there on every startup.
 (use-package flymake
-  :hook (prog-mode . flymake-mode)
+  :hook (prog-mode . (lambda ()
+                        (when buffer-file-name
+                          (flymake-mode 1))))
   :bind (:map flymake-mode-map
               ("M-n" . flymake-goto-next-error)
               ("M-p" . flymake-goto-prev-error)

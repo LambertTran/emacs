@@ -40,6 +40,21 @@
   :defer 1
   :after counsel)
 
+;; Adds file/buffer type icons to ivy candidates (M-x, switch-buffer, etc.)
+(use-package nerd-icons-ivy-rich
+  :ensure t
+  :after ivy
+  :init
+  (nerd-icons-ivy-rich-mode 1))
+
+;; ivy-rich must load after nerd-icons-ivy-rich configures its own
+;; transformers, otherwise it overwrites them with its plain-text ones.
+(use-package ivy-rich
+  :ensure t
+  :after nerd-icons-ivy-rich
+  :init
+  (ivy-rich-mode 1))
+
 (use-package projectile
   :ensure t
   :config
