@@ -32,13 +32,6 @@
 
 (global-set-key (kbd "C-x k") 'kill-this-buffer)
 
-(defun ls ()
-  "Lists the contents of the current directory."
-  (interactive)
-  (shell-command "open -a iterm ."))
-
-(global-set-key (kbd "C-x t") 'ls)
-
 ;; MacOS option key as meta
 (setq mac-option-modifier 'meta)
 

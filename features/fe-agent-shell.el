@@ -26,6 +26,10 @@
   (setq agent-shell-session-strategy 'new)
   ;; Default `agent-shell' to Claude Code instead of prompting for an agent.
   (setq agent-shell-preferred-agent-config 'claude-code)
+  ;; `agent-shell' (C-c c) is DWIM: it auto-inserts a link to whatever file
+  ;; (and line/region) point was in when invoked. Disable that so C-c c
+  ;; always opens to a blank prompt.
+  (setq agent-shell-context-sources nil)
   ;; Skip the ASCII art / greeting banner shown at session start.
   (setq agent-shell-show-welcome-message nil)
   ;; agent-shell has no public toggle for the bootstrapping info blocks

@@ -67,7 +67,14 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages nil))
+ '(package-selected-packages
+   '(agent-shell corfu counsel-projectile doom-modeline doom-themes
+                 evil-collection evil-nerd-commenter evil-surround
+                 exec-path-from-shell git-link golden-ratio kubed
+                 magit nerd-icons-dired nerd-icons-ivy-rich
+                 org-bullets rainbow-delimiters smex super-save
+                 terraform-ts-mode visual-fill-column vterm ws-butler
+                 yasnippet)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
