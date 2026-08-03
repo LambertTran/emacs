@@ -22,7 +22,8 @@
         (jsonnet "https://github.com/sourcegraph/tree-sitter-jsonnet")
         (comment "https://github.com/stsewd/tree-sitter-comment")
         (org "https://github.com/milisims/tree-sitter-org")
-        (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
+        (yaml "https://github.com/ikatyang/tree-sitter-yaml")
+        (helm "https://github.com/ngalaiko/tree-sitter-go-template" nil "dialects/helm/src")))
 
 (defun fe-treesit-install-all-grammars ()
   "Install every grammar in `treesit-language-source-alist' that isn't
