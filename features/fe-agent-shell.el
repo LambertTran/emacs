@@ -26,6 +26,19 @@
   (setq agent-shell-session-strategy 'new)
   ;; Default `agent-shell' to Claude Code instead of prompting for an agent.
   (setq agent-shell-preferred-agent-config 'claude-code)
+  ;; MCP servers to expose to agent-shell sessions. The ACP bridge does not
+  ;; read repo-local .mcp.json files; servers must be declared here. Token
+  ;; is read from the shell environment at session start, not hardcoded.
+  (setq agent-shell-mcp-servers
+        '(((name . "grafana")
+           (command . "docker")
+           (args . ("run" "--rm" "-i"
+                    "-e" "GRAFANA_URL"
+                    "-e" "GRAFANA_SERVICE_ACCOUNT_TOKEN"
+                    "grafana/mcp-grafana" "-t" "stdio"))
+           (env . (((name . "GRAFANA_URL") (value . "https://grafana.lbtran.com"))
+                   ((name . "GRAFANA_SERVICE_ACCOUNT_TOKEN")
+                    (value . (lambda () (getenv "GRAFANA_SERVICE_ACCOUNT_TOKEN")))))))))
   ;; `agent-shell' (C-c c) is DWIM: it auto-inserts a link to whatever file
   ;; (and line/region) point was in when invoked. Disable that so C-c c
   ;; always opens to a blank prompt.

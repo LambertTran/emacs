@@ -33,7 +33,17 @@
       org-edit-src-content-indentation 0
       org-startup-truncated nil
       org-src-tab-acts-natively t
-      org-startup-indented t)
+      org-startup-indented t
+      org-src-fontify-natively t
+      ;; files are personal notes, not shared/untrusted -- skip the
+      ;; per-execution confirmation prompt
+      org-confirm-babel-evaluate nil)
+
+(with-eval-after-load 'org
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((shell . t)
+     (python . t))))
 
 ;; disable image size
 (setq org-image-actual-width nil)
