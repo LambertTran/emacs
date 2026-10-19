@@ -42,7 +42,24 @@
 ;; package.el will fetch exactly that version instead of whatever happens
 ;; to be newest in the archive at `package-refresh-contents' time.
 (defvar my/package-versions
-  '((agent-shell . "20261017.42")
+  '(;; Transitive dependencies first, so they're installed at these exact
+    ;; versions before a dependent package can pull in a newer one.
+    (acp . "20261018.1243")
+    (shell-maker . "20261015.2327")
+    (transient . "20260701.1255")
+    (compat . "31.0.0.1")
+    (cond-let . "20260701.1237")
+    (dash . "20260221.1346")
+    (f . "20241003.1131")
+    (goto-chg . "20240407.1110")
+    (llama . "20260601.1455")
+    (magit-section . "20260701.1407")
+    (s . "20220902.1511")
+    (shrink-path . "20190208.1335")
+    (swiper . "20260101.2125")
+    (with-editor . "20260701.1252")
+    ;; Packages declared with `use-package' ... `:ensure t'.
+    (agent-shell . "20261017.42")
     (corfu . "20261014.1751")
     (counsel . "20260913.715")
     (counsel-projectile . "20260918.709")
@@ -72,8 +89,8 @@
     (ws-butler . "20250310.205")
     (yasnippet . "20250602.1342"))
   "Exact package versions pinned in this config, keyed by package name.
-Every entry here corresponds to a `use-package' declaration with
-`:ensure t' somewhere under features/. There's no entry for `org' because
+Entries are either `use-package' declarations with `:ensure t'
+somewhere under features/, or transitive dependencies of those. There's no entry for `org' because
 this config relies on the version bundled with Emacs itself, and none for
 `terraform-ts-mode' because it's installed via `package-vc' (see
 features/fe-terraform.el), which pins a commit instead of an archive
@@ -99,6 +116,10 @@ installs a specific, reproducible version instead of just \"latest\"."
          (t (package-install pkg)))))))
 
 (setq use-package-ensure-function #'my/package-ensure-pinned)
+
+;; Install every pinned package (dependencies included) up front, in order.
+(dolist (entry my/package-versions)
+  (my/package-ensure-pinned (car entry)))
 
 (use-package org
   :ensure t
@@ -131,13 +152,13 @@ installs a specific, reproducible version instead of just \"latest\"."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(agent-shell corfu counsel-projectile doom-modeline doom-themes
-                 evil-collection evil-nerd-commenter evil-surround
-                 exec-path-from-shell git-link golden-ratio
-                 magit markdown-mode nerd-icons-dired
-                 nerd-icons-ivy-rich org-bullets rainbow-delimiters
-                 smex super-save terraform-ts-mode visual-fill-column
-                 vterm ws-butler yasnippet)))
+   '(acp agent-shell corfu counsel-projectile doom-modeline doom-themes
+         evil-collection evil-nerd-commenter evil-surround
+         exec-path-from-shell git-link golden-ratio magit
+         markdown-mode nerd-icons-dired nerd-icons-ivy-rich
+         org-bullets rainbow-delimiters smex super-save
+         terraform-ts-mode visual-fill-column vterm ws-butler
+         yasnippet)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
